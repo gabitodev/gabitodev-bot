@@ -20,7 +20,17 @@ const changeScholarRonin = async (interaction) => {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('change-ronin-address')
-    .setDescription('Change the scholar ronin address'),
+    .setDescription('Change the scholar ronin address')
+    .addStringOption(option =>
+      option
+        .setName('ronin-address')
+        .setDescription('The new ronin address')
+        .setRequired(true))
+    .addStringOption(option =>
+      option
+        .setName('discord-id')
+        .setDescription('Scholars discord ID')
+        .setRequired(true)),
   async execute(interaction) {
     if (interaction.member.roles.cache.has('863179537324048414')) return;
     await changeScholarRonin(interaction);
