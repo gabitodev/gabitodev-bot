@@ -125,6 +125,7 @@ const calcTeamStats = (scholarData, roninData) => {
 };
 
 const updateScholarship = async (interaction) => {
+  await interaction.reply('Actualizando base de datos...');
   // 1. We obtain all the shcolars
   const scholars = await getScholars();
   // 2. We obtain each ronin address
