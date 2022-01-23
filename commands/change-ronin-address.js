@@ -11,7 +11,7 @@ const changeScholarRonin = async (interaction) => {
   // 3. We display the response to the user
   interaction.reply({
     content: stripIndents`
-    ${bold('¡Asignada nueva direccion ronin!')}
+    ${bold('Asignada nueva direccion ronin!')}
     Asignada al becado: <@${discordID}>
     Dirección ronin asignada: ${inlineCode(`${scholarRoninAddress}`)}`,
   });

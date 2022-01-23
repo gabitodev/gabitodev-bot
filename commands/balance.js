@@ -212,16 +212,16 @@ const getBalance = async (interaction) => {
   const teamID = interaction.options.getNumber('team-id');
   const team = await getScholarTeam(teamID);
   // 2.1 We verify that the scholar exist in the database
-  if (team === undefined) return interaction.editReply({ content: '¡Este equipo no existe!' });
+  if (team === undefined) return interaction.editReply({ content: 'Este equipo no existe!' });
   const { gabitodev_address: gabitodevAddress, updated_at: updatedAt, discord_id: discordID } = team;
   // 2.2 We verify that the scholar who runs the command is the owner of the team
-  if (interaction.user.id !== discordID) return interaction.editReply({ content: '¡Este equipo no es tu equipo!' });
+  if (interaction.user.id !== discordID) return interaction.editReply({ content: 'Este equipo no es tu equipo!' });
   // 3. We verify that 3 hours have not passed since the last update of the database
   const hoursSinceLastUpdate = calcHoursPassed(updatedAt);
   if (hoursSinceLastUpdate <= 3) {
     await interaction.editReply({
+      content: 'Cargado el balance correctamente!',
       embeds: [createTeamEmbed(team, interaction)],
-      ephemeral: false,
     });
   } else {
     // 4. We use the ronin address to get the SLP data on the scholar account.
@@ -232,9 +232,8 @@ const getBalance = async (interaction) => {
     await updateScholarTeam(teamStats);
     // 7. Display the response to the user
     await interaction.editReply({
-      content: '¡Cargado el balance correctamente!',
+      content: 'Cargado el balance correctamente!',
       embeds: [createTeamEmbedUpdated(teamStats, interaction)],
-      ephemeral: false,
     });
     // Log
     console.log(`The ${interaction.commandName} command has been executed successfully by the shcolar ${interaction.user.username}`);

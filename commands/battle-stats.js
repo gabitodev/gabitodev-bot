@@ -59,8 +59,8 @@ const calcLastBattleinHours = (battleDate) => {
   const now = DateTime.now();
   const lastMatchDate = (DateTime.fromISO(battleDate)).minus({ hours: 3 });
   const difference = Interval.fromDateTimes(lastMatchDate, now);
-  const hours = difference.length('hour');
-  const minutes = difference.length('minutes');
+  const hours = Math.round(difference.length('hour'));
+  const minutes = Math.round(difference.length('minutes'));
   if (hours > 0) {
     return `Hace ${hours} horas`;
   } else {
