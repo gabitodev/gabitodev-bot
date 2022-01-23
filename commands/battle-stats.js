@@ -97,7 +97,7 @@ const createBattleEmbed = (battlesSummary, discordID) => {
     totalBattles } = battlesSummary;
   const battleEmbed = new MessageEmbed()
     .setColor('#eec300')
-    .setTitle('Estadisticas PVP')
+    .setTitle('Estadisticas en Arena')
     .setDescription(`Batallas recientes del becado <@${discordID}>`)
     .addFields(
       { name: '📖 Nombre en Axie', value: `#${name}`, inline: true },
