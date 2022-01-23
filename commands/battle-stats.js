@@ -116,7 +116,7 @@ const createBattleEmbed = (battlesSummary, discordID) => {
 const getBattleStats = async (interaction) => {
   await interaction.reply('Cargando las estadísticas en Arena de tu equipo...');
   // 1. We define the constants and find the ronin address of the scholar
-  const discordID = '849878890092822538';
+  const discordID = interaction.user.id;
   const { gabitodev_address: teamRoninAddress } = await getTeamRoninAddress(discordID);
   // 2. We get all the battles and the PVP information from the API
   const { battles } = await getScholarBattles(teamRoninAddress);
@@ -142,7 +142,7 @@ module.exports = {
     .setName('battle-stats')
     .setDescription('Muestra tus estadisticas en Arena'),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (!interaction.member.roles.cache.has('863179537324048414')) return;
     await getBattleStats(interaction);
   },
 };
