@@ -1,0 +1,30 @@
+{
+  "name": "gabitodev-bot",
+  "version": "1.0.0",
+  "description": "Bot of Gabitodev Scholarship",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "author": "gabitodev",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "ascii-table3": "^0.7.0",
+    "axios": "^0.25.0",
+    "coingecko-api": "^1.0.10",
+    "common-tags": "^1.8.2",
+    "discord-api-types": "^0.26.1",
+    "discord.js": "^13.6.0",
+    "dotenv": "^14.2.0",
+    "luxon": "^2.3.0",
+    "pg": "^8.7.1",
+    "quickchart-js": "^2.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.7.0",
+    "nodemon": "^2.0.15"
+  }
+}
