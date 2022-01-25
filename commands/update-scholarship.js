@@ -94,16 +94,16 @@ const updateScholar = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, s
     `${scholarSLP}`,
     `${mmr}`,
     `${averageSLP}`,
-    `${teamID}`,
     `${todaySLP}`,
+    `${teamID}`,
   ];
   const res = await query(text, values);
   return res;
 };
 
 const calcTeamStats = (scholarData, roninData) => {
-  const { new_team: newTeam, free_days: freeDays, double_energy: doubleEnergy, team_id: teamID, yesterday_slp: yesterdaySlp, special } = scholarData;
-  const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData;
+  const { new_team: newTeam, free_days: freeDays, double_energy: doubleEnergy, team_id: teamID, yesterday_slp: yesterdaySlp, gabitodev_address: scholarRoninAddress, special } = scholarData;
+  const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData[scholarRoninAddress];
   const lastClaim = formatDate(lastClaimUnix);
   const nextClaim = formatDate(nextClaimUnix);
   const managerSLP = calcScholarFee(lastClaim, newTeam, freeDays, doubleEnergy, special);
