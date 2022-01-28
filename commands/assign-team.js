@@ -1,5 +1,4 @@
-const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { stripIndents } = require('common-tags');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const { query } = require('../db');
 
 const assignTeam = async (interaction) => {
@@ -9,12 +8,7 @@ const assignTeam = async (interaction) => {
   // 2. We update the databse
   await query('UPDATE teams SET discord_id = $1 WHERE team_id = $2', [`${discordID}`, `${teamID}`]);
   // 3. Display the response to the user
-  await interaction.reply({
-    content: stripIndents`
-    ${bold('The team was successfully assigned!')}
-    Team Number: ${inlineCode(`${teamID}`)}
-    Assigned to scholar: <@${discordID}>`,
-  });
+  await interaction.reply({ content: `Successfully assigned team #${teamID} to scholar <@${discordID}>` });
 };
 
 module.exports = {

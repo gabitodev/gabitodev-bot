@@ -8,7 +8,7 @@ const assignFreeDays = async (interaction) => {
   // 2. We remove the scholar from the database
   await query('UPDATE teams SET free_days = $1 WHERE team_id = $2', [`${freeDays}`, `${teamID}`]);
   // 3. Display the response to the user
-  await interaction.reply({ content: `Assigned ${freeDays} without fee to team #${teamID}` });
+  await interaction.reply({ content: `Assigned ${freeDays} days without fee to team #${teamID}` });
 };
 
 module.exports = {

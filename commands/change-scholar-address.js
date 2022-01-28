@@ -1,5 +1,4 @@
-const { stripIndents } = require('common-tags');
-const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
+const { SlashCommandBuilder, inlineCode } = require('@discordjs/builders');
 const { query } = require('../db');
 
 const changeScholarRonin = async (interaction) => {
@@ -9,12 +8,7 @@ const changeScholarRonin = async (interaction) => {
   // 2. We update the new ronin address to the database
   await query('UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2', [`${scholarRoninAddress}`, `${discordID}`]);
   // 3. We display the response to the user
-  await interaction.reply({
-    content: stripIndents`
-    ${bold('Assigned new ronin address!')}
-    Assigned to Scholar: <@${discordID}>
-    Assigned Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}`,
-  });
+  await interaction.reply({ content: `Assigned ${inlineCode(`${scholarRoninAddress}`)} ronin address to scholar <@${discordID}>` });
 };
 
 module.exports = {

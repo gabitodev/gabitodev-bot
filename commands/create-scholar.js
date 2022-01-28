@@ -22,9 +22,9 @@ const createScholar = async (interaction) => {
   await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new scholar!')}
-    User in Discord: <@${scholarDiscordId}>
-    Name: ${inlineCode(`${scholarName}`)}
-    Ronin Addresss: ${inlineCode(`${scholarRoninAddress}`)}`,
+    Scholar User: <@${scholarDiscordId}>
+    Scholar Name: ${inlineCode(`${scholarName}`)}
+    Scholar Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}`,
   });
 };
 
