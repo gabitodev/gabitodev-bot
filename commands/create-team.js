@@ -20,7 +20,7 @@ const createTeam = async (interaction) => {
   // 2. We create the team in the database
   await insertTeam(teamID, teamRoninAddress, dailyFee, freeDays);
   // 3. Display the response to the user
-  interaction.reply({
+  await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new team!')}
     Team Number: ${inlineCode(`${teamID}`)}

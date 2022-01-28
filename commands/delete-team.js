@@ -7,7 +7,7 @@ const deleteTeam = async (interaction) => {
   // 2. We remove the team from the database
   await query('DELETE FROM Teams WHERE team_id = $1', [`${teamID}`]);
   // 3. Display the response to the user
-  interaction.reply({ content: `Successfully eliminated team #<@${teamID}>` });
+  await interaction.reply({ content: `Successfully eliminated team #<@${teamID}>` });
 };
 
 module.exports = {

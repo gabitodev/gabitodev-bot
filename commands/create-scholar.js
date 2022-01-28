@@ -19,7 +19,7 @@ const createScholar = async (interaction) => {
   // 2. We create the scholar in the database
   await insertScholar(scholarDiscordId, scholarName, scholarRoninAddress);
   // 3. Display the response to the user
-  interaction.reply({
+  await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new scholar!')}
     User in Discord: <@${scholarDiscordId}>

@@ -8,7 +8,7 @@ const setTeamFee = async (interaction) => {
   // 2. We add/remove the 20 energies to the scholar
   await query('UPDATE teams SET daily_fee = $1 WHERE team_id = $2', [`${dailyFee}`, `${teamID}`]);
   // 3. Display the response to the user
-  interaction.reply({ content: `Successfully assigned a daily fee of ${dailyFee} to team #${teamID}` });
+  await interaction.reply({ content: `Successfully assigned a daily fee of ${dailyFee} to team #${teamID}` });
 };
 
 module.exports = {
