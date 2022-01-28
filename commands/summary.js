@@ -16,7 +16,7 @@ const getRoninData = async (roninAddress) => {
 
 const setYesterdaySLP = async (yesterdaySlp, teamID) => {
   const text = `
-  UPDATE Teams
+  UPDATE teams
   SET yesterday_slp = $1 
   WHERE team_id = $2`;
   const values = [`${yesterdaySlp}`, `${teamID}`];
@@ -26,10 +26,10 @@ const setYesterdaySLP = async (yesterdaySlp, teamID) => {
 
 const getScholars = async () => {
   const text = `
-  SELECT * FROM Teams
-  INNER JOIN Scholars 
-  ON Scholars.discord_id = Teams.discord_id 
-  ORDER BY Teams.team_id`;
+  SELECT * FROM teams
+  INNER JOIN scholars 
+  ON scholars.discord_id = teams.discord_id 
+  ORDER BY teams.team_id`;
   const { rows } = await query(text);
   return rows;
 };
@@ -64,7 +64,7 @@ const getTeams = (scholars) => {
 };
 
 const getSummary = async (interaction) => {
-  await interaction.reply('Cargando el resumen de la Scholarship...');
+  await interaction.reply('Loading the scholarship summary...');
   // 1. We get the total SLP from my ronin address
   const { total_slp: mainAccountSlp } = await getRoninData(process.env.RONIN);
   // 2. We obtain all the scholars

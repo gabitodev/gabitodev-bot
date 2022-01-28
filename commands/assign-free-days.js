@@ -6,15 +6,15 @@ const assignFreeDays = async (interaction) => {
   const teamID = interaction.options.getString('team-id');
   const freeDays = interaction.options.getNumber('free-days');
   // 2. We remove the scholar from the database
-  await query('UPDATE Teams SET free_days = $1 WHERE team_id = $2', [`${freeDays}`, `${teamID}`]);
+  await query('UPDATE teams SET free_days = $1 WHERE team_id = $2', [`${freeDays}`, `${teamID}`]);
   // 3. Display the response to the user
-  interaction.reply({ content: `Asignados ${freeDays} días al equipo #${teamID}!` });
+  interaction.reply({ content: `Assigned ${freeDays} without fee to team #${teamID}` });
 };
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('assign-free-days')
-    .setDescription('Assign free days to a scholar')
+    .setDescription('Assign days without fee to a team')
     .addStringOption(option =>
       option
         .setName('team-id')

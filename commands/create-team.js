@@ -2,37 +2,32 @@ const { stripIndents } = require('common-tags');
 const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
 const { query } = require('../db');
 
-const insertTeam = async (teamID, teamRoninAddress, isNewTeam) => {
+const insertTeam = async (teamID, teamRoninAddress, dailyFee, freeDays) => {
   const text = `
-  INSERT INTO Teams (team_id, gabitodev_address, new_team)
-  VALUES ($1, $2, $3)`;
-  const values = [`${teamID}`, `${teamRoninAddress}`, `${isNewTeam}`];
+  INSERT INTO teams (team_id, team_address, daily_fee, free_days)
+  VALUES ($1, $2, $3, $4)`;
+  const values = [`${teamID}`, `${teamRoninAddress}`, `${dailyFee}`, `${freeDays}`];
   const { rows } = await query(text, values);
   return rows[0];
-};
-
-const checkNewTeam = (isNewTeam) => {
-  if (isNewTeam === 'false') {
-    return 'No lo es';
-  } else {
-    return 'Si lo es';
-  }
 };
 
 const createTeam = async (interaction) => {
   // 1. We define the variables
   const teamID = interaction.options.getNumber('team-id');
   const teamRoninAddress = interaction.options.getString('ronin-address');
-  const isNewTeam = interaction.options.getBoolean('new-team');
+  const dailyFee = interaction.options.getNumber('daily-fee');
+  const freeDays = interaction.options.getNumber('free-days');
   // 2. We create the team in the database
-  await insertTeam(teamID, teamRoninAddress, isNewTeam);
+  await insertTeam(teamID, teamRoninAddress, dailyFee, freeDays);
   // 3. Display the response to the user
   interaction.reply({
     content: stripIndents`
-    ${bold('Agregado nuevo equipo exitosamente!')}
-    Número: ${inlineCode(`${teamID}`)}
-    Dirección Ronin: ${inlineCode(`${teamRoninAddress}`)}
-    Es un nuevo equipo? ${inlineCode(`${checkNewTeam(isNewTeam)}`)}`,
+    ${bold('Successfully created a new team!')}
+    Team Number: ${inlineCode(`${teamID}`)}
+    Team Ronin Address: ${inlineCode(`${teamRoninAddress}`)}
+    Team Daily Fee: ${inlineCode(`${dailyFee}`)}
+    Team Days Without Fee: ${inlineCode(`${dailyFee}`)}
+    `,
   });
 };
 
@@ -50,10 +45,15 @@ module.exports = {
         .setName('ronin-address')
         .setDescription('Team ronin address')
         .setRequired(true))
-    .addBooleanOption(option =>
+    .addNumberOption(option =>
       option
-        .setName('new-team')
-        .setDescription('Is it a new team')
+        .setName('daily-fee')
+        .setDescription('Fee to be charged daily')
+        .setRequired(true))
+    .addNumberOption(option =>
+      option
+        .setName('free-days')
+        .setDescription('Days without fee')
         .setRequired(true)),
   async execute(interaction) {
     if (interaction.member.roles.cache.has('863179537324048414')) return;

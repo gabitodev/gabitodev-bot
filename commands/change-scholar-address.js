@@ -7,19 +7,19 @@ const changeScholarRonin = async (interaction) => {
   const scholarRoninAddress = interaction.options.getString('ronin-address');
   const discordID = interaction.options.getString('discord-id');
   // 2. We update the new ronin address to the database
-  await query('UPDATE Scholars SET ronin_address = $1 WHERE discord_id = $2', [`${scholarRoninAddress}`, `${discordID}`]);
+  await query('UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2', [`${scholarRoninAddress}`, `${discordID}`]);
   // 3. We display the response to the user
   interaction.reply({
     content: stripIndents`
-    ${bold('Asignada nueva direccion ronin!')}
-    Asignada al becado: <@${discordID}>
-    Dirección ronin asignada: ${inlineCode(`${scholarRoninAddress}`)}`,
+    ${bold('Assigned new ronin address!')}
+    Assigned to Scholar: <@${discordID}>
+    Assigned Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}`,
   });
 };
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('change-ronin-address')
+    .setName('change-scholar-address')
     .setDescription('Change the scholar ronin address')
     .addStringOption(option =>
       option

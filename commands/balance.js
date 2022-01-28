@@ -20,25 +20,11 @@ const formatDate = (unixDate) => {
   return ISODate;
 };
 
-const calcScholarFee = (date, isNewPlayer, freeDays, hasDoubleEnergy, isSpecial) => {
+const calcScholarFee = (date, freeDays, dailyFee) => {
   const daysSinceLastClaim = calcDaysSinceLastClaim(date);
-  if (isNewPlayer) {
-    let newPlayerFee = 80 * (daysSinceLastClaim - 5 - freeDays);
-    newPlayerFee = Math.max(0, newPlayerFee);
-    return newPlayerFee;
-  } else if (hasDoubleEnergy) {
-    let doubleEnergyFee = 140 * (daysSinceLastClaim - freeDays);
-    doubleEnergyFee = Math.max(0, doubleEnergyFee);
-    return doubleEnergyFee;
-  } else if (isSpecial) {
-    let specialFee = 55 * (daysSinceLastClaim - freeDays);
-    specialFee = Math.max(0, specialFee);
-    return specialFee;
-  } else {
-    let fee = 70 * (daysSinceLastClaim - freeDays);
-    fee = Math.max(0, fee);
-    return fee;
-  }
+  let fee = dailyFee * (daysSinceLastClaim - freeDays);
+  fee = Math.max(0, fee);
+  return fee;
 };
 
 const calcHoursPassed = (updatedAt) => {
@@ -91,7 +77,7 @@ const makeChart = (scholar, manager) => {
             label: 'SLP TOTAL',
           },
         ],
-        labels: ['Becado', 'Fees'],
+        labels: ['Scholar', 'Fees'],
       },
       options: {
         legend: {
@@ -107,7 +93,7 @@ const makeChart = (scholar, manager) => {
 
 const getScholarTeam = async (teamID) => {
   const text = `
-  SELECT * FROM Teams
+  SELECT * FROM teams
   WHERE team_id = $1`;
   const values = [`${teamID}`];
   const { rows } = await query(text, values);
@@ -116,8 +102,9 @@ const getScholarTeam = async (teamID) => {
 
 const updateScholarTeam = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, scholarSLP, mmr, averageSLP, teamID }) => {
   const text = `
-  UPDATE Teams
-  SET last_claim = $1,
+  UPDATE teams
+  SET 
+    last_claim = $1,
     next_claim = $2,
     unclaimed_slp = $3,
     manager_slp = $4,
@@ -140,17 +127,16 @@ const updateScholarTeam = async ({ lastClaim, nextClaim, unclaimedSLP, managerSL
 };
 
 const calcTeamStats = (teamData, roninData) => {
-  const { new_team: newTeam, free_days: freeDays, double_energy: doubleEnergy, team_id: teamID, discord_id: discordID, special } = teamData;
+  const { free_days: freeDays, team_id: teamID, daily_fee: dailyFee } = teamData;
   const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData;
   const lastClaim = formatDate(lastClaimUnix);
   const nextClaim = formatDate(nextClaimUnix);
-  const managerSLP = calcScholarFee(lastClaim, newTeam, freeDays, doubleEnergy, special);
+  const managerSLP = calcScholarFee(lastClaim, freeDays, dailyFee);
   const scholarSLP = calcScholarSLP(unclaimedSLP, managerSLP);
   const averageSLP = calcAverageSLP(unclaimedSLP, lastClaim);
   const pieChart = makeChart(scholarSLP, managerSLP);
   const team = {
     teamID,
-    discordID,
     lastClaim,
     nextClaim,
     unclaimedSLP,
@@ -165,18 +151,18 @@ const calcTeamStats = (teamData, roninData) => {
 
 const createTeamEmbedUpdated = (teamStats, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
-  const { teamID, discordID, nextClaim, unclaimedSLP, managerSLP, scholarSLP, averageSLP, pieChart } = teamStats;
+  const { teamID, nextClaim, unclaimedSLP, managerSLP, scholarSLP, averageSLP, pieChart } = teamStats;
   const teamEmbed = new MessageEmbed()
     .setColor('#eec300')
-    .setTitle('Estadísticas')
-    .setDescription(`<@${discordID}>`)
+    .setTitle('Scholar Balance')
+    .setDescription(`Balance for scholar <@${interaction.user.id}>`)
     .addFields(
-      { name: '📖 Equipo', value: `#${teamID}`, inline: true },
-      { name: '🗓 Fecha de Cobro', value: `${nextClaim}`, inline: true },
-      { name: `${slpEmoji} SLP Farmeado`, value: `${unclaimedSLP}`, inline: true },
-      { name: '🛑 Fees Acumulados', value: `${managerSLP}`, inline: true },
-      { name: '✅ SLP Becado', value: `${scholarSLP}`, inline: true },
-      { name: '📊 Promedio SLP', value: `${averageSLP}`, inline: true })
+      { name: '📖 Team', value: `#${teamID}`, inline: true },
+      { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
+      { name: `${slpEmoji} Unclaimed SLP`, value: `${unclaimedSLP}`, inline: true },
+      { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
+      { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
+      { name: '📊 Average SLP', value: `${averageSLP}`, inline: true })
     .setImage(`${pieChart}`);
   return teamEmbed;
 };
@@ -189,50 +175,51 @@ const createTeamEmbed = (scholar, interaction) => {
     unclaimed_slp: unclaimedSLP,
     manager_slp: managerSLP,
     scholar_slp: scholarSLP,
-    average_slp: averageSLP,
-    discord_id: discordID } = scholar;
+    average_slp: averageSLP } = scholar;
   const teamEmbed = new MessageEmbed ()
     .setColor('#eec300')
-    .setTitle('Estadísticas')
-    .setDescription(`<@${discordID}>`)
+    .setTitle('Scholar Balance')
+    .setDescription(`Balance for scholar <@${interaction.user.id}>`)
     .addFields(
-      { name: '📖 Equipo', value: `#${teamID}`, inline: true },
-      { name: '🗓 Fecha de Cobro', value: `${nextClaim.toISOString().substring(0, 10)}`, inline: true },
-      { name: `${slpEmoji} SLP Farmeado`, value: `${unclaimedSLP}`, inline: true },
-      { name: '🛑 Fees Acumulados', value: `${managerSLP}`, inline: true },
-      { name: '✅ SLP Becado', value: `${scholarSLP}`, inline: true },
-      { name: '📊 Promedio SLP', value: `${averageSLP}`, inline: true })
+      { name: '📖 Team', value: `#${teamID}`, inline: true },
+      { name: '🗓 Next Claim', value: `${nextClaim.toISOString().substring(0, 10)}`, inline: true },
+      { name: `${slpEmoji} Unclaimed SLP`, value: `${unclaimedSLP}`, inline: true },
+      { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
+      { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
+      { name: '📊 Average SLP', value: `${averageSLP}`, inline: true })
     .setImage(`${makeChart(unclaimedSLP, managerSLP)}`);
   return teamEmbed;
 };
 
 const getBalance = async (interaction) => {
-  await interaction.reply('Cargando el balance de tu equipo...');
+  await interaction.reply('Loading the balance of your team...');
   // 1. We get the scholar team in the database
   const teamID = interaction.options.getNumber('team-id');
   const team = await getScholarTeam(teamID);
   // 2.1 We verify that the scholar exist in the database
-  if (team === undefined) return interaction.editReply({ content: 'Este equipo no existe!' });
-  const { gabitodev_address: gabitodevAddress, updated_at: updatedAt, discord_id: discordID } = team;
+  if (team === undefined) return interaction.editReply({ content: 'This team does not exist!' });
+  const { team_address: teamRoninAddress, updated_at: updatedAt, discord_id: discordID } = team;
   // 2.2 We verify that the scholar who runs the command is the owner of the team
-  if (interaction.user.id !== discordID) return interaction.editReply({ content: 'Este equipo no es tu equipo!' });
+  if (interaction.user.id !== discordID) return interaction.editReply({ content: 'This is not your team!' });
   // 3. We verify that 3 hours have not passed since the last update of the database
   const hoursSinceLastUpdate = calcHoursPassed(updatedAt);
   if (hoursSinceLastUpdate <= 3) {
     await interaction.editReply({
-      content: 'Cargado el balance correctamente!',
+      content: 'Loaded the balance correctly!',
       embeds: [createTeamEmbed(team, interaction)],
     });
+    // Log
+    console.log(`The ${interaction.commandName} command has been executed successfully by the shcolar ${interaction.user.username}`);
   } else {
     // 4. We use the ronin address to get the SLP data on the scholar account.
-    const roninData = await getRoninData(gabitodevAddress);
+    const roninData = await getRoninData(teamRoninAddress);
     // 5. We use the data to do the calculations
     const teamStats = calcTeamStats(team, roninData);
     // 6. We update the database
     await updateScholarTeam(teamStats);
     // 7. Display the response to the user
     await interaction.editReply({
-      content: 'Cargado el balance correctamente!',
+      content: 'Loaded the balance correctly!',
       embeds: [createTeamEmbedUpdated(teamStats, interaction)],
     });
     // Log
@@ -243,11 +230,11 @@ const getBalance = async (interaction) => {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('balance')
-    .setDescription('Muestra el balance de tu equipo')
+    .setDescription('Show your team balance')
     .addNumberOption(option =>
       option
         .setName('team-id')
-        .setDescription('El número de tu equipo')
+        .setDescription('Team number')
         .setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.roles.cache.has('863179537324048414')) return;

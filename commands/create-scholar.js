@@ -4,7 +4,7 @@ const { query } = require('../db');
 
 const insertScholar = async (scholarDiscordID, scholarName, scholarRoninAddress) => {
   const text = `
-  INSERT INTO scholars (discord_id, full_name, ronin_address)
+  INSERT INTO scholars (discord_id, full_name, scholar_address)
   VALUES ($1, $2, $3)`;
   const values = [`${scholarDiscordID}`, `${scholarName}`, `${scholarRoninAddress}`];
   const { rows } = await query(text, values);
@@ -21,10 +21,10 @@ const createScholar = async (interaction) => {
   // 3. Display the response to the user
   interaction.reply({
     content: stripIndents`
-    ${bold('Agregado nuevo becado exitosamente!')}
-    Usuarion en Discord: <@${scholarDiscordId}>
-    Nombre: ${inlineCode(`${scholarName}`)}
-    Dirección Ronin: ${inlineCode(`${scholarRoninAddress}`)}`,
+    ${bold('Successfully created a new scholar!')}
+    User in Discord: <@${scholarDiscordId}>
+    Name: ${inlineCode(`${scholarName}`)}
+    Ronin Addresss: ${inlineCode(`${scholarRoninAddress}`)}`,
   });
 };
 

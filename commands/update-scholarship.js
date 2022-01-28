@@ -18,25 +18,11 @@ const formatDate = (unixDate) => {
   return ISODate;
 };
 
-const calcScholarFee = (date, isNewPlayer, freeDays, hasDoubleEnergy, isSpecial) => {
+const calcScholarFee = (date, freeDays, dailyFee) => {
   const daysSinceLastClaim = calcDaysSinceLastClaim(date);
-  if (isNewPlayer) {
-    let newPlayerFee = 80 * (daysSinceLastClaim - 5 - freeDays);
-    newPlayerFee = Math.max(0, newPlayerFee);
-    return newPlayerFee;
-  } else if (hasDoubleEnergy) {
-    let doubleEnergyFee = 140 * (daysSinceLastClaim - freeDays);
-    doubleEnergyFee = Math.max(0, doubleEnergyFee);
-    return doubleEnergyFee;
-  } else if (isSpecial) {
-    let specialFee = 55 * (daysSinceLastClaim - freeDays);
-    specialFee = Math.max(0, specialFee);
-    return specialFee;
-  } else {
-    let fee = 70 * (daysSinceLastClaim - freeDays);
-    fee = Math.max(0, fee);
-    return fee;
-  }
+  let fee = dailyFee * (daysSinceLastClaim - freeDays);
+  fee = Math.max(0, fee);
+  return fee;
 };
 
 const calcDaysSinceLastClaim = (date) => {
@@ -65,17 +51,17 @@ const calcAverageSLP = (slp, date) => {
 
 const getScholars = async () => {
   const text = `
-  SELECT * FROM Teams
-  INNER JOIN Scholars 
-  ON Scholars.discord_id = Teams.discord_id
-  ORDER BY Teams.team_id`;
+  SELECT * FROM teams
+  INNER JOIN scholars 
+  ON scholars.discord_id = teams.discord_id
+  ORDER BY teams.team_id`;
   const { rows } = await query(text);
   return rows;
 };
 
 const updateScholar = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, scholarSLP, mmr, averageSLP, teamID, todaySLP }) => {
   const text = `
-  UPDATE Teams
+  UPDATE teams
   SET 
     last_claim = $1,
     next_claim = $2,
@@ -102,11 +88,11 @@ const updateScholar = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, s
 };
 
 const calcTeamStats = (scholarData, roninData) => {
-  const { new_team: newTeam, free_days: freeDays, double_energy: doubleEnergy, team_id: teamID, yesterday_slp: yesterdaySlp, gabitodev_address: scholarRoninAddress, special } = scholarData;
-  const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData[scholarRoninAddress];
+  const { free_days: freeDays, team_id: teamID, yesterday_slp: yesterdaySlp, team_address: teamAddress, daily_fee: dailyFee } = scholarData;
+  const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData[teamAddress];
   const lastClaim = formatDate(lastClaimUnix);
   const nextClaim = formatDate(nextClaimUnix);
-  const managerSLP = calcScholarFee(lastClaim, newTeam, freeDays, doubleEnergy, special);
+  const managerSLP = calcScholarFee(lastClaim, freeDays, dailyFee);
   const scholarSLP = calcScholarSLP(unclaimedSLP, managerSLP);
   const averageSLP = calcAverageSLP(unclaimedSLP, lastClaim);
   const todaySLP = unclaimedSLP - yesterdaySlp;
@@ -125,11 +111,11 @@ const calcTeamStats = (scholarData, roninData) => {
 };
 
 const updateScholarship = async (interaction) => {
-  await interaction.reply('Actualizando base de datos...');
+  await interaction.reply('Updating database...');
   // 1. We obtain all the shcolars
   const scholars = await getScholars();
   // 2. We obtain each ronin address
-  const roninsAddresses = scholars.map(({ gabitodev_address: teamRoninAddress }) => {
+  const roninsAddresses = scholars.map(({ team_address: teamRoninAddress }) => {
     const ronins = [];
     ronins.push(teamRoninAddress);
     return ronins;
@@ -142,7 +128,7 @@ const updateScholarship = async (interaction) => {
     updateScholar(teamStats);
   }
   // 5. We display the response to the user
-  await interaction.editReply({ content: 'La base de datos ha sido actualizada!' });
+  await interaction.editReply({ content: 'The database has been updated!' });
 };
 
 module.exports = {

@@ -32,13 +32,13 @@ client.on('interactionCreate', async interaction => {
   } catch (error) {
     console.error(error);
     if (!interaction.replied) {
-      return interaction.reply({
+      await interaction.reply({
         content: stripIndents`
         Ha ocurrido un error con el comando!
         <@772619893278507018> beep boop arreglame😭`,
       });
     } else {
-      return interaction.editReply({
+      await interaction.editReply({
         content: stripIndents`
         Ha ocurrido un error con el comando!
         <@772619893278507018> beep boop arreglame😭`,

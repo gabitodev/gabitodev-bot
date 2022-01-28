@@ -20,25 +20,10 @@ const formatDate = (unixDate) => {
   return ISODate;
 };
 
-const calcScholarFee = (date, isNewPlayer, freeDays, hasDoubleEnergy, isSpecial) => {
-  const daysSinceLastClaim = calcDaysSinceLastClaim(date);
-  if (isNewPlayer) {
-    let newPlayerFee = 80 * (daysSinceLastClaim - 5 - freeDays);
-    newPlayerFee = Math.max(0, newPlayerFee);
-    return newPlayerFee;
-  } else if (hasDoubleEnergy) {
-    let doubleEnergyFee = 140 * (daysSinceLastClaim - freeDays);
-    doubleEnergyFee = Math.max(0, doubleEnergyFee);
-    return doubleEnergyFee;
-  } else if (isSpecial) {
-    let specialFee = 55 * (daysSinceLastClaim - freeDays);
-    specialFee = Math.max(0, specialFee);
-    return specialFee;
-  } else {
-    let fee = 70 * (daysSinceLastClaim - freeDays);
-    fee = Math.max(0, fee);
-    return fee;
-  }
+const calcScholarFee = (daysSinceLastClaim, freeDays, dailyFee) => {
+  let fee = dailyFee * (daysSinceLastClaim - freeDays);
+  fee = Math.max(0, fee);
+  return fee;
 };
 
 const calcDaysSinceLastClaim = (date) => {
@@ -54,24 +39,23 @@ const calcScholarSLP = (total, manager) => {
   return scholarSLP;
 };
 
-const calcAverageSLP = (slp, date) => {
-  const daysSinceLastClaim = calcDaysSinceLastClaim(date);
+const calcAverageSLP = (slp, daysSinceLastClaim) => {
   if (daysSinceLastClaim === 0) {
-    const average = 0;
-    return average;
+    return 0;
   } else {
-    const average = (slp / daysSinceLastClaim);
-    return Math.round(average);
+    let average = (slp / daysSinceLastClaim);
+    average = Math.round(average);
+    return average;
   }
 };
 
 const getScholar = async (discordID) => {
   const text = `
-  SELECT * FROM Teams
-  INNER JOIN Scholars 
-  ON Scholars.discord_id = Teams.discord_id
-  WHERE Scholars.discord_id = $1
-  ORDER BY Teams.team_id`;
+  SELECT scholars.scholar_address, teams.team_id, teams.team_address, teams.daily_fee, teams.free_days FROM Teams
+  INNER JOIN scholars 
+  ON scholars.discord_id = teams.discord_id
+  WHERE scholars.discord_id = $1
+  ORDER BY teams.team_id`;
   const values = [`${discordID}`];
   const { rows } = await query(text, values);
   return rows;
@@ -79,7 +63,7 @@ const getScholar = async (discordID) => {
 
 const updateScholar = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, scholarSLP, mmr, averageSLP, teamID }) => {
   const text = `
-  UPDATE Teams
+  UPDATE teams
   SET 
     last_claim = $1,
     next_claim = $2,
@@ -104,14 +88,15 @@ const updateScholar = async ({ lastClaim, nextClaim, unclaimedSLP, managerSLP, s
 };
 
 const calcTeamStats = (scholarData, roninData) => {
-  const { new_team: newTeam, free_days: freeDays, double_energy: doubleEnergy, team_id: teamID, special } = scholarData;
+  const { free_days: freeDays, team_id: teamID, daily_fee: dailyFee } = scholarData;
   const { last_claim: lastClaimUnix, next_claim: nextClaimUnix, in_game_slp: unclaimedSLP, mmr } = roninData;
   const lastClaim = formatDate(lastClaimUnix);
   const nextClaim = formatDate(nextClaimUnix);
-  const managerSLP = calcScholarFee(lastClaim, newTeam, freeDays, doubleEnergy, special);
+  const daysSinceLastClaim = calcDaysSinceLastClaim(lastClaim);
+  const managerSLP = calcScholarFee(daysSinceLastClaim, freeDays, dailyFee);
   const scholarSLP = calcScholarSLP(unclaimedSLP, managerSLP);
-  const averageSLP = calcAverageSLP(unclaimedSLP, lastClaim);
-  const team = {
+  const averageSLP = calcAverageSLP(unclaimedSLP, daysSinceLastClaim);
+  const teamStats = {
     teamID,
     lastClaim,
     nextClaim,
@@ -121,65 +106,71 @@ const calcTeamStats = (scholarData, roninData) => {
     mmr,
     averageSLP,
   };
-  return team;
+  return teamStats;
 };
 
-const createScholarEmbed = (scholarUpdated, interaction) => {
+const createScholarEmbed = (scholarTeams, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
-  const scholarEmbed = scholarUpdated.map(({
-    team_id: teamID,
-    next_claim: nextClaim,
-    unclaimed_slp: unclaimedSLP,
-    manager_slp: managerSLP,
-    scholar_slp: scholarSLP,
-    average_slp: averageSLP,
+  const scholarEmbed = scholarTeams.map(({
+    teamID,
+    nextClaim,
+    unclaimedSLP,
+    managerSLP,
+    scholarSLP,
+    averageSLP,
     mmr }) => {
     const embed = new MessageEmbed()
       .setColor('#eec300')
-      .setTitle(`Informacion del equipo #${teamID}`)
+      .setTitle(`Team #${teamID}`)
       .setDescription('')
       .addFields(
-        { name: '🗓 Fecha de Cobro', value: `${nextClaim.toISOString().substring(0, 10)}`, inline: true },
-        { name:  `${slpEmoji} SLP Farmeado`, value: `${unclaimedSLP}`, inline: true },
-        { name: '🛑 Fees Acumulados', value: `${managerSLP}`, inline: true },
-        { name: '✅ SLP del Becado', value: `${scholarSLP}`, inline: true },
+        { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
+        { name:  `${slpEmoji} Unclaimed SLP`, value: `${unclaimedSLP}`, inline: true },
+        { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
+        { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
         { name: '📈 MMR', value: `${mmr}`, inline: true },
-        { name: '📊 Promedio SLP Diario', value: `${averageSLP}`, inline: true },
+        { name: '📊 Average SLP', value: `${averageSLP}`, inline: true },
       );
     return embed;
   });
   return scholarEmbed;
 };
 
+const getTeamsStats = async (scholar) => {
+  const teams = [];
+  for (const data of scholar) {
+    const { team_address: teamAddress } = data;
+    const roninData = await getRoninData(teamAddress);
+    const teamStats = calcTeamStats(data, roninData);
+    updateScholar(teamStats);
+    teams.push(teamStats);
+  }
+  return teams;
+};
+
 const getScholarInfo = async (interaction) => {
-  await interaction.reply('Intentando mostrar informacion del becado...');
+  await interaction.reply('Loading scholar information...');
   // 1. We obtain the information of the scholar
   const discordID = interaction.options.getString('discord-id');
   const scholar = await getScholar(discordID);
   // 2. We verify that the scholar exists in the database
-  if (scholar.length === 0) return interaction.editReply({ content: 'El becado no posee equipos!' });
+  if (scholar.length === 0) return interaction.editReply({ content: 'The scholar does not own a team!' });
   // 3. We calc the stats of the team and update the database
-  for (const data of scholar) {
-    const { gabitodev_address: gabitodevAddress } = data;
-    const roninData = await getRoninData(gabitodevAddress);
-    const teamStats = calcTeamStats(data, roninData);
-    updateScholar(teamStats);
-  }
-  // 4. We get the information from the updated scholar
-  const scholarUpdated = await getScholar(discordID);
-  const { ronin_address: scholarRoninAddress } = scholarUpdated[0];
+  const scholarTeams = await getTeamsStats(scholar);
+  // 4. We get the scholar address
+  const { scholar_address: scholarAddress } = scholar[0];
   // 5. Display the response to the user
   await interaction.editReply({
     content: stripIndents`
-    Informacion del becado: <@${discordID}>
-    Dirección Ronin: ${inlineCode(`${scholarRoninAddress}`)}`,
-    embeds: createScholarEmbed(scholarUpdated, interaction),
+    Scholar: <@${discordID}>
+    Ronin Address: ${inlineCode(`${scholarAddress}`)}`,
+    embeds: createScholarEmbed(scholarTeams, interaction),
   });
 };
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('scholar-info')
+    .setName('get-scholar')
     .setDescription('Shows the information of the scholar')
     .addStringOption(option =>
       option

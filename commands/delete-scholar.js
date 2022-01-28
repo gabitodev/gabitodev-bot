@@ -5,9 +5,9 @@ const deleteScholar = async (interaction) => {
   // 1. We define the variables
   const discordID = interaction.options.getString('discord-id');
   // 2. We remove the scholar from the database
-  await query('DELETE FROM Scholars WHERE discord_id = $1', [`${discordID}`]);
+  await query('DELETE FROM scholars WHERE discord_id = $1', [`${discordID}`]);
   // 3. Display the response to the user
-  interaction.reply({ content: `¡Elinminado el becado <@${discordID}> exitosamente!` });
+  interaction.reply({ content: `Successfully eliminated the scholar <@${discordID}>` });
 };
 
 module.exports = {

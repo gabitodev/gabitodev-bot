@@ -4,16 +4,16 @@ const { query } = require('../db');
 
 const assignTeam = async (interaction) => {
   // 1. We define the variables
-  const teamId = interaction.options.getNumber('team-number');
-  const discordId = interaction.options.getString('discord-id');
+  const teamID = interaction.options.getNumber('team-number');
+  const discordID = interaction.options.getString('discord-id');
   // 2. We update the databse
-  await query('UPDATE Teams SET discord_id = $1 WHERE team_id = $2', [`${discordId}`, `${teamId}`]);
+  await query('UPDATE teams SET discord_id = $1 WHERE team_id = $2', [`${discordID}`, `${teamID}`]);
   // 3. Display the response to the user
   interaction.reply({
     content: stripIndents`
-    ${bold('El equipo fue asignado exitosamente!')}
-    Número del equipo: ${inlineCode(`${teamId}`)}
-    Asignado al becado: <@${discordId}>`,
+    ${bold('The team was successfully assigned!')}
+    Team Number: ${inlineCode(`${teamID}`)}
+    Assigned to scholar: <@${discordID}>`,
   });
 };
 

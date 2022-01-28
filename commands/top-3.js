@@ -4,9 +4,9 @@ const { query } = require('../db');
 
 const getTop = async () => {
   const text = `
-  SELECT Scholars.full_name, Teams.mmr FROM Scholars
-  INNER JOIN Teams
-  ON Scholars.discord_id = Teams.discord_id
+  SELECT scholars.full_name, teams.mmr FROM Scholars
+  INNER JOIN teams
+  ON scholars.discord_id = teams.discord_id
   ORDER BY mmr DESC
   LIMIT 3`;
   const { rows } = await query(text);
@@ -23,7 +23,7 @@ const getTop3 = async (interaction) => {
   });
   // 3. We create the table to display
   const top3Table = new AsciiTable3('Top 3 becados de la semana')
-    .setHeading('Puesto', 'Nombre', 'MMR')
+    .setHeading('Rating', 'Name', 'MMR')
     .setAlign(3)
     .addRowMatrix(top3Ordered)
     .setStyle('unicode-single');
