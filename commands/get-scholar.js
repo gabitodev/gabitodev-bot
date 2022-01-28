@@ -136,7 +136,7 @@ const createScholarEmbed = (scholarTeams, interaction) => {
   return scholarEmbed;
 };
 
-const getTeamsStats = async (scholar) => {
+const getScholarTeams = async (scholar) => {
   const teams = [];
   for (const data of scholar) {
     const { team_address: teamAddress } = data;
@@ -156,7 +156,7 @@ const getScholarInfo = async (interaction) => {
   // 2. We verify that the scholar exists in the database
   if (scholar.length === 0) return interaction.editReply({ content: 'The scholar does not own a team!' });
   // 3. We calc the stats of the team and update the database
-  const scholarTeams = await getTeamsStats(scholar);
+  const scholarTeams = await getScholarTeams(scholar);
   // 4. We get the scholar address
   const { scholar_address: scholarAddress } = scholar[0];
   // 5. Display the response to the user
