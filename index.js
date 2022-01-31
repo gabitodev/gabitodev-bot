@@ -34,14 +34,14 @@ client.on('interactionCreate', async interaction => {
     if (!interaction.replied) {
       await interaction.reply({
         content: stripIndents`
-        Ha ocurrido un error con el comando!
-        <@772619893278507018> beep boop arreglame😭`,
+        An error has occurred with the command!
+        Fix me <@772619893278507018>😭`,
       });
     } else {
       await interaction.editReply({
         content: stripIndents`
-        Ha ocurrido un error con el comando!
-        <@772619893278507018> beep boop arreglame😭`,
+        An error has occurred with the command!
+        Fix me <@772619893278507018>😭`,
       });
     }
   }

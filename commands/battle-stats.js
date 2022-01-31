@@ -63,9 +63,9 @@ const calcLastBattleinHours = (battleDate) => {
   const hours = difference.length('hour');
   const minutes = difference.length('minutes');
   if (hours > 1) {
-    return `Hace ${hours.toFixed(0)} horas`;
+    return `${hours.toFixed(0)} hours ago`;
   } else {
-    return `Hace ${minutes.toFixed(0)} minutos`;
+    return `${minutes.toFixed(0)} minutes ago`;
   }
 };
 
@@ -101,9 +101,9 @@ const createBattlesEmbed = (battlesSummary, discordID) => {
     .setTitle('Scholar Recent Battles')
     .setDescription(`Recent battles for scholar <@${discordID}> `)
     .addFields(
-      { name: '📖 In-Game Name', value: `#${name}`, inline: true },
+      { name: '📖 In-Game Name', value: `${name}`, inline: true },
       { name: '🕐 Last Battle Time', value: `${hoursSinceLastBattle}`, inline: true },
-      { name: '💢 Arena Battles', value: `Ultimas ${totalBattles}`, inline: true },
+      { name: '💢 Arena Battles', value: `Last ${totalBattles}`, inline: true },
       { name: '⚔ Arena MMR', value: `${mmr}`, inline: true },
       { name: '🏆 Arena Rank', value: `${rank}`, inline: true },
       { name: '📊 SLP Per Battle', value: `${calcAverageSlpPerBattle(mmr)}`, inline: true },
@@ -117,7 +117,7 @@ const createBattlesEmbed = (battlesSummary, discordID) => {
 const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
   // 1. We define the constants and find the ronin address of the scholar
-  const discordID = interaction.user.id;
+  const discordID = '538147432459141127';
   const { team_address: teamRoninAddress } = await getTeamRoninAddress(discordID);
   // 2. We get all the battles and the PVP information from the API
   const { battles } = await getScholarBattles(teamRoninAddress);
@@ -143,7 +143,7 @@ module.exports = {
     .setName('battle-stats')
     .setDescription('Show your recent battles in arena'),
   async execute(interaction) {
-    if (!interaction.member.roles.cache.has('863179537324048414')) return;
+    if (interaction.member.roles.cache.has('863179537324048414')) return;
     await getBattleStats(interaction);
   },
 };
