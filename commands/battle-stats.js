@@ -143,7 +143,7 @@ module.exports = {
     .setName('battle-stats')
     .setDescription('Show your recent battles in arena'),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (!interaction.member.roles.cache.has('863179537324048414')) return;
     await getBattleStats(interaction);
   },
 };
