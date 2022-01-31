@@ -187,7 +187,7 @@ const createTeamEmbed = (scholar, interaction) => {
       { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
       { name: '📊 Average SLP', value: `${averageSLP}`, inline: true })
-    .setImage(`${makeChart(unclaimedSLP, managerSLP)}`);
+    .setImage(`${makeChart(scholarSLP, managerSLP)}`);
   return teamEmbed;
 };
 
