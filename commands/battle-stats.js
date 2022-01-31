@@ -117,7 +117,7 @@ const createBattlesEmbed = (battlesSummary, discordID) => {
 const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
   // 1. We define the constants and find the ronin address of the scholar
-  const discordID = '538147432459141127';
+  const discordID = interaction.user.id;
   const { team_address: teamRoninAddress } = await getTeamRoninAddress(discordID);
   // 2. We get all the battles and the PVP information from the API
   const { battles } = await getScholarBattles(teamRoninAddress);
