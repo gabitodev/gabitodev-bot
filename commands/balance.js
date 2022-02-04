@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { DateTime, Interval } = require('luxon');
-const QuickChart = require('quickchart-js');
 const axios = require('axios').default;
 const { query } = require('../db');
 
@@ -59,36 +58,33 @@ const calcAverageSLP = (slp, date) => {
   }
 };
 
-const makeChart = (scholar, manager) => {
-  const chart = new QuickChart()
-    .setWidth(500)
-    .setHeight(300)
-    .setBackgroundColor('transparent')
-    .setConfig({
-      type: 'pie',
-      data: {
-        datasets: [
-          {
-            data: [Math.max(0, scholar), manager],
-            backgroundColor: [
-              'rgb(118, 210, 117)',
-              'rgb(255, 134, 124)',
-            ],
-            label: 'SLP TOTAL',
-          },
-        ],
-        labels: ['Scholar', 'Fees'],
-      },
-      options: {
-        legend: {
-          labels: {
-            fontColor: 'white',
-          },
+const makeBalanceChart = (scholarSLP, managerSLP) => {
+  const chart = {
+    type: 'pie',
+    data: {
+      datasets: [
+        {
+          data: [Math.max(0, scholarSLP), managerSLP],
+          backgroundColor: [
+            'rgb(118, 210, 117)',
+            'rgb(255, 134, 124)',
+          ],
+          label: 'SLP TOTAL',
+        },
+      ],
+      labels: ['Scholar', 'Fees'],
+    },
+    options: {
+      legend: {
+        labels: {
+          fontColor: 'white',
         },
       },
-    });
-  const pieChart = chart.getUrl();
-  return pieChart;
+    },
+  };
+  const encodedChart = encodeURIComponent(JSON.stringify(chart));
+  const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+  return chartUrl;
 };
 
 const getScholarTeam = async (teamID) => {
@@ -134,7 +130,7 @@ const calcTeamStats = (teamData, roninData) => {
   const managerSLP = calcScholarFee(lastClaim, freeDays, dailyFee);
   const scholarSLP = calcScholarSLP(unclaimedSLP, managerSLP);
   const averageSLP = calcAverageSLP(unclaimedSLP, lastClaim);
-  const pieChart = makeChart(scholarSLP, managerSLP);
+  const balanceChart = makeBalanceChart(scholarSLP, managerSLP);
   const team = {
     teamID,
     lastClaim,
@@ -144,14 +140,14 @@ const calcTeamStats = (teamData, roninData) => {
     scholarSLP,
     mmr,
     averageSLP,
-    pieChart,
+    balanceChart,
   };
   return team;
 };
 
 const createTeamEmbedUpdated = (teamStats, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
-  const { teamID, nextClaim, unclaimedSLP, managerSLP, scholarSLP, averageSLP, pieChart } = teamStats;
+  const { teamID, nextClaim, unclaimedSLP, managerSLP, scholarSLP, averageSLP, balanceChart } = teamStats;
   const teamEmbed = new MessageEmbed()
     .setColor('#eec300')
     .setTitle('Scholar Balance')
@@ -163,7 +159,7 @@ const createTeamEmbedUpdated = (teamStats, interaction) => {
       { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
       { name: '📊 Average SLP', value: `${averageSLP}`, inline: true })
-    .setImage(`${pieChart}`);
+    .setImage(`${balanceChart}`);
   return teamEmbed;
 };
 
@@ -187,7 +183,7 @@ const createTeamEmbed = (scholar, interaction) => {
       { name: '🛑 Accrued fees', value: `${managerSLP}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSLP}`, inline: true },
       { name: '📊 Average SLP', value: `${averageSLP}`, inline: true })
-    .setImage(`${makeChart(scholarSLP, managerSLP)}`);
+    .setImage(`${makeBalanceChart(scholarSLP, managerSLP)}`);
   return teamEmbed;
 };
 

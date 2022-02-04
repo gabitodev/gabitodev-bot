@@ -20,8 +20,7 @@
     "discord.js": "^13.6.0",
     "dotenv": "^15.0.0",
     "luxon": "^2.3.0",
-    "pg": "^8.7.1",
-    "quickchart-js": "^2.0.3"
+    "pg": "^8.7.1"
   },
   "devDependencies": {
     "eslint": "^8.8.0",
