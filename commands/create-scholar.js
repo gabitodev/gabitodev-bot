@@ -13,18 +13,23 @@ const insertScholar = async (scholarDiscordID, scholarName, scholarRoninAddress)
 
 const createScholar = async (interaction) => {
   // 1. We define the variables
-  const scholarDiscordId = interaction.options.getString('discord-id');
+  const scholarRoleID = '863179537324048414';
+  const scholarDiscordID = interaction.options.getString('discord-id');
   const scholarName = interaction.options.getString('name');
   const scholarRoninAddress = interaction.options.getString('ronin-address');
-  // 2. We create the scholar in the database
-  await insertScholar(scholarDiscordId, scholarName, scholarRoninAddress);
+  const member = await interaction.guild.members.fetch(scholarDiscordID);
+  const role = await interaction.guild.roles.fetch(scholarRoleID);
+  // 2. We create the scholar in the database and add Scholar Role
+  await insertScholar(scholarDiscordID, scholarName, scholarRoninAddress);
+  member.roles.add(role);
   // 3. Display the response to the user
   await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new scholar!')}
-    Scholar User: <@${scholarDiscordId}>
-    Scholar Name: ${inlineCode(`${scholarName}`)}
-    Scholar Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}`,
+    User: <@${scholarDiscordID}>
+    Name: ${inlineCode(`${scholarName}`)}
+    Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}
+    Role: <@&${scholarRoleID}>`,
   });
 };
 
