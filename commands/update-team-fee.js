@@ -1,14 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
 const setTeamFee = async (interaction) => {
   // 1. We define the variables
-  const teamID = interaction.options.getNumber('team-id');
+  const teamId = interaction.options.getNumber('team-id');
   const dailyFee = interaction.options.getNumber('fee-amount');
   // 2. We add/remove the 20 energies to the scholar
-  await query('UPDATE teams SET daily_fee = $1 WHERE team_id = $2', [`${dailyFee}`, `${teamID}`]);
+  await none('UPDATE teams SET daily_fee = $1 WHERE team_id = $2', [dailyFee, teamId]);
   // 3. Display the response to the user
-  await interaction.reply({ content: `Successfully assigned a daily fee of ${dailyFee} to team #${teamID}` });
+  await interaction.reply(`Successfully assigned a daily fee of ${dailyFee} to team #${teamId}`);
 };
 
 module.exports = {

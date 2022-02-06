@@ -1,32 +1,31 @@
 const { stripIndents } = require('common-tags');
 const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
-const insertTeam = async (teamID, teamRoninAddress, dailyFee, freeDays) => {
+const insertTeam = async (teamId, teamAddress, dailyFee, freeDays) => {
   const text = `
   INSERT INTO teams (team_id, team_address, daily_fee, free_days)
   VALUES ($1, $2, $3, $4)`;
-  const values = [`${teamID}`, `${teamRoninAddress}`, `${dailyFee}`, `${freeDays}`];
-  const { rows } = await query(text, values);
-  return rows[0];
+  const values = [teamId, teamAddress, dailyFee, freeDays];
+  await none(text, values);
 };
 
 const createTeam = async (interaction) => {
   // 1. We define the variables
-  const teamID = interaction.options.getNumber('team-id');
-  const teamRoninAddress = interaction.options.getString('ronin-address');
+  const teamId = interaction.options.getNumber('team-id');
+  const teamAddress = interaction.options.getString('ronin-address');
   const dailyFee = interaction.options.getNumber('daily-fee');
   const freeDays = interaction.options.getNumber('free-days');
   // 2. We create the team in the database
-  await insertTeam(teamID, teamRoninAddress, dailyFee, freeDays);
+  await insertTeam(teamId, teamAddress, dailyFee, freeDays);
   // 3. Display the response to the user
   await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new team!')}
-    Team Number: ${inlineCode(`${teamID}`)}
-    Team Ronin Address: ${inlineCode(`${teamRoninAddress}`)}
-    Team Daily Fee: ${inlineCode(`${dailyFee}`)}
-    Team Days Without Fee: ${inlineCode(`${dailyFee}`)}
+    Number: ${inlineCode(`${teamId}`)}
+    Ronin Address: ${inlineCode(`${teamAddress}`)}
+    Daily Fee: ${inlineCode(`${dailyFee}`)}
+    Days Without Fee: ${inlineCode(`${dailyFee}`)}
     `,
   });
 };

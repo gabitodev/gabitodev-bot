@@ -1,14 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
 const assignFreeDays = async (interaction) => {
   // 1. We define the variables
-  const teamID = interaction.options.getString('team-id');
+  const teamId = interaction.options.getString('team-id');
   const freeDays = interaction.options.getNumber('free-days');
   // 2. We remove the scholar from the database
-  await query('UPDATE teams SET free_days = $1 WHERE team_id = $2', [`${freeDays}`, `${teamID}`]);
+  await none('UPDATE teams SET free_days = $1 WHERE team_id = $2', [freeDays, teamId]);
   // 3. Display the response to the user
-  await interaction.reply({ content: `Assigned ${freeDays} days without fee to team #${teamID}` });
+  await interaction.reply(`Assigned ${freeDays} days without fee to team #${teamId}`);
 };
 
 module.exports = {

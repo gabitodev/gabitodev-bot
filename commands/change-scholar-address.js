@@ -1,14 +1,14 @@
 const { SlashCommandBuilder, inlineCode } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
 const changeScholarRonin = async (interaction) => {
   // 1. We define the variables
-  const scholarRoninAddress = interaction.options.getString('ronin-address');
-  const discordID = interaction.options.getString('discord-id');
+  const scholarAddress = interaction.options.getString('ronin-address');
+  const discordId = interaction.options.getString('discord-id');
   // 2. We update the new ronin address to the database
-  await query('UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2', [`${scholarRoninAddress}`, `${discordID}`]);
+  await none('UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2', [scholarAddress, discordId]);
   // 3. We display the response to the user
-  await interaction.reply({ content: `Assigned ${inlineCode(`${scholarRoninAddress}`)} ronin address to scholar <@${discordID}>` });
+  await interaction.reply(`Assigned ${inlineCode(`${scholarAddress}`)} ronin address to scholar <@${discordId}>`);
 };
 
 module.exports = {

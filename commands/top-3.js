@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
 const { AsciiTable3 } = require('ascii-table3');
-const { query } = require('../db');
+const { many } = require('../db/db');
 
 const getTop = async () => {
   const text = `
@@ -9,23 +9,23 @@ const getTop = async () => {
   ON scholars.discord_id = teams.discord_id
   ORDER BY mmr DESC
   LIMIT 3`;
-  const { rows } = await query(text);
-  return rows;
+  const top3 = await many(text);
+  return top3;
 };
 
 const getTop3 = async (interaction) => {
   // 1. We obtain the top 3 of the scholarships
   const top3Scholars = await getTop();
   // 2. We make an array to display the leaderboard
-  const top3Ordered = top3Scholars.map(({ full_name, mmr }, index) => {
-    const array = [`${index + 1}`, `${full_name}`, `${mmr}`];
+  const orderedTop3 = top3Scholars.map(({ fullName, mmr }, index) => {
+    const array = [`${index + 1}`, `${fullName}`, `${mmr}`];
     return array;
   });
   // 3. We create the table to display
-  const top3Table = new AsciiTable3('Top 3 becados de la semana')
+  const top3Table = new AsciiTable3('Top 3 scholars of the week')
     .setHeading('Rating', 'Name', 'MMR')
     .setAlign(3)
-    .addRowMatrix(top3Ordered)
+    .addRowMatrix(orderedTop3)
     .setStyle('unicode-single');
   // 4. We display the table to the user
   await interaction.reply({ content: codeBlock(top3Table) });

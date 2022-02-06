@@ -1,13 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
 const deleteTeam = async (interaction) => {
   // 1. We define the variables
-  const teamID = interaction.options.getString('team-id');
+  const teamId = interaction.options.getString('team-id');
   // 2. We remove the team from the database
-  await query('DELETE FROM Teams WHERE team_id = $1', [`${teamID}`]);
+  await none('DELETE FROM Teams WHERE team_id = $1', [teamId]);
   // 3. Display the response to the user
-  await interaction.reply({ content: `Successfully deleted team #<@${teamID}>` });
+  await interaction.reply(`Successfully deleted team #<@${teamId}>`);
 };
 
 module.exports = {

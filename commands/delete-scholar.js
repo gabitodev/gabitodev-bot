@@ -1,15 +1,15 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
 const deleteScholar = async (interaction) => {
   // 1. We define the variables
-  const discordID = interaction.options.getString('discord-id');
-  const member = await interaction.guild.members.fetch(discordID);
+  const discordId = interaction.options.getString('discord-id');
+  const member = await interaction.guild.members.fetch(discordId);
   // 2. We remove the scholar from the database and we
-  await query('DELETE FROM scholars WHERE discord_id = $1', [`${discordID}`]);
+  await none('DELETE FROM scholars WHERE discord_id = $1', [discordId]);
   member.kick('He will no longer be part of the scholarship');
   // 3. Display the response to the user
-  await interaction.reply({ content: `Successfully deleted and kicked the scholar <@${discordID}>` });
+  await interaction.reply(`Successfully deleted and kicked the scholar <@${discordId}>`);
 };
 
 module.exports = {

@@ -1,35 +1,34 @@
 const { stripIndents } = require('common-tags');
 const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { query } = require('../db');
+const { none } = require('../db/db');
 
-const insertScholar = async (scholarDiscordID, scholarName, scholarRoninAddress) => {
+const insertScholar = async (scholarDiscordId, scholarName, scholarAddress) => {
   const text = `
   INSERT INTO scholars (discord_id, full_name, scholar_address)
   VALUES ($1, $2, $3)`;
-  const values = [`${scholarDiscordID}`, `${scholarName}`, `${scholarRoninAddress}`];
-  const { rows } = await query(text, values);
-  return rows[0];
+  const values = [scholarDiscordId, scholarName, scholarAddress];
+  await none(text, values);
 };
 
 const createScholar = async (interaction) => {
   // 1. We define the variables
-  const scholarRoleID = '863179537324048414';
-  const scholarDiscordID = interaction.options.getString('discord-id');
+  const scholarRoleId = '863179537324048414';
+  const scholarDiscordId = interaction.options.getString('discord-id');
   const scholarName = interaction.options.getString('name');
-  const scholarRoninAddress = interaction.options.getString('ronin-address');
-  const member = await interaction.guild.members.fetch(scholarDiscordID);
-  const role = await interaction.guild.roles.fetch(scholarRoleID);
+  const scholarAddress = interaction.options.getString('ronin-address');
+  const member = await interaction.guild.members.fetch(scholarDiscordId);
+  const role = await interaction.guild.roles.fetch(scholarRoleId);
   // 2. We create the scholar in the database and add Scholar Role
-  await insertScholar(scholarDiscordID, scholarName, scholarRoninAddress);
+  await insertScholar(scholarDiscordId, scholarName, scholarAddress);
   member.roles.add(role);
   // 3. Display the response to the user
   await interaction.reply({
     content: stripIndents`
     ${bold('Successfully created a new scholar!')}
-    User: <@${scholarDiscordID}>
+    User: <@${scholarDiscordId}>
     Name: ${inlineCode(`${scholarName}`)}
-    Ronin Address: ${inlineCode(`${scholarRoninAddress}`)}
-    Role: <@&${scholarRoleID}>`,
+    Ronin Address: ${inlineCode(`${scholarAddress}`)}
+    Role: <@&${scholarRoleId}>`,
   });
 };
 

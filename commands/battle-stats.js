@@ -1,34 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { DateTime, Interval } = require('luxon');
-const axios = require('axios').default;
-const { query } = require('../db');
+const { one } = require('../db/db');
+const { getRoninData, getScholarBattles } = require('../modules/ronin-api');
 
-const getScholarBattles = async (roninAddress) => {
-  try {
-    const { data } = await axios.get(`https://game-api.axie.technology/logs/pvp/${roninAddress}`);
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const getRoninData = async (roninAddress) => {
-  try {
-    const { data } = await axios.get(`https://game-api.axie.technology/api/v1/${roninAddress}`);
-    return data;
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const getTeamRoninAddress = async (discordID) => {
-  const text = `
-  SELECT team_address FROM teams
-  WHERE discord_id = $1`;
-  const values = [`${discordID}`];
-  const { rows } = await query(text, values);
-  return rows[0];
+const getTeamAddress = async (discordID) => {
+  const teamAddress = await one('SELECT team_address FROM teams WHERE discord_id = $1', [discordID]);
+  return teamAddress;
 };
 
 const calcPercentages = (num, total) => {
@@ -83,7 +61,7 @@ const calcAverageSlpPerBattle = (mmr) => {
   }
 };
 
-const createBattlesEmbed = (battlesSummary, discordID) => {
+const createBattlesEmbed = (battlesSummary, discordId) => {
   const {
     name,
     rank,
@@ -99,7 +77,7 @@ const createBattlesEmbed = (battlesSummary, discordID) => {
   const battleEmbed = new MessageEmbed()
     .setColor('#eec300')
     .setTitle('Scholar Recent Battles')
-    .setDescription(`Recent battles for scholar <@${discordID}> `)
+    .setDescription(`Recent battles for scholar <@${discordId}> `)
     .addFields(
       { name: '📖 In-Game Name', value: `${name}`, inline: true },
       { name: '🕐 Last Battle Time', value: `${hoursSinceLastBattle}`, inline: true },
@@ -117,22 +95,22 @@ const createBattlesEmbed = (battlesSummary, discordID) => {
 const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
   // 1. We define the constants and find the ronin address of the scholar
-  const discordID = interaction.user.id;
-  const { team_address: teamRoninAddress } = await getTeamRoninAddress(discordID);
+  const discordId = interaction.user.id;
+  const { teamAddress } = await getTeamAddress(discordId);
   // 2. We get all the battles and the PVP information from the API
-  const { battles } = await getScholarBattles(teamRoninAddress);
-  const { rank, name, mmr } = await getRoninData(teamRoninAddress);
+  const { battles } = await getScholarBattles(teamAddress);
+  const { rank, name, mmr } = await getRoninData(teamAddress);
   // 3. We sort the battles by won, tied and lost
-  const battlesSummary = await calcBattlesSummary(battles, teamRoninAddress);
+  const battlesSummary = await calcBattlesSummary(battles, teamAddress);
   // 4. We calculate the hours passed since the last battle
-  const { game_ended: lastBattleDate } = battles[0];
+  const { gameEnded: lastBattleDate } = battles[0];
   const hoursSinceLastBattle = calcLastBattleinHours(lastBattleDate);
   // 5. We create a new Object with the calculations of battleSumary and hoursSinceLastBattle
   const battlesStats = { name, rank, mmr, hoursSinceLastBattle, ...battlesSummary };
   // 6. Display the response to the user
   await interaction.editReply({
     content: 'Successfully loaded arena stats!',
-    embeds: [createBattlesEmbed(battlesStats, discordID)],
+    embeds: [createBattlesEmbed(battlesStats, discordId)],
   });
   // log
   console.log(`The ${interaction.commandName} command has been executed successfully by the shcolar ${interaction.user.username}`);
