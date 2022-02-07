@@ -1,6 +1,5 @@
+require('dotenv').config();
 const { Client, Intents, Collection } = require('discord.js');
-const { stripIndents } = require('common-tags');
-const { deployCommands } = require('./modules/deploy-commands');
 const fs = require('fs');
 
 const client = new Client({
@@ -19,33 +18,15 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-client.once('ready', async () => {
-  await deployCommands();
-  console.log('Gabitodev Bot is online!');
-});
+const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-  const command = client.commands.get(interaction.commandName);
-  if (!command) return;
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    if (!interaction.replied) {
-      await interaction.reply({
-        content: stripIndents`
-        An error has occurred with the command!
-        Fix me <@772619893278507018>😭`,
-      });
-    } else {
-      await interaction.editReply({
-        content: stripIndents`
-        An error has occurred with the command!
-        Fix me <@772619893278507018>😭`,
-      });
-    }
+for (const file of eventFiles) {
+  const event = require(`./events/${file}`);
+  if (event.once) {
+    client.once(event.name, (...args) => event.execute(...args));
+  } else {
+    client.on(event.name, (...args) => event.execute(...args));
   }
-});
+}
 
 client.login(process.env.TOKEN);

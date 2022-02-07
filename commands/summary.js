@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { AsciiTable3 } = require('ascii-table3');
 const { inlineCode, bold, codeBlock, SlashCommandBuilder } = require('@discordjs/builders');
 const { stripIndents } = require('common-tags');
