@@ -40,6 +40,14 @@ const makeBalanceChart = (scholarSlp, managerSlp) => {
   return chartUrl;
 };
 
+const checkDate = (date) => {
+  if (date instanceof Date) {
+    return date.toISOString().substring(0, 10);
+  } else {
+    return date;
+  }
+};
+
 const createTeamEmbed = (teamStats, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
   const { teamId, nextClaim, inGameSlp, managerSlp, scholarSlp, averageSlp } = teamStats;
@@ -49,7 +57,7 @@ const createTeamEmbed = (teamStats, interaction) => {
     .setDescription(`Balance for scholar <@${interaction.user.id}>`)
     .addFields(
       { name: '📖 Team', value: `#${teamId}`, inline: true },
-      { name: '🗓 Next Claim', value: `${nextClaim.toISOString().substring(0, 10)}`, inline: true },
+      { name: '🗓 Next Claim', value: `${checkDate(nextClaim)}`, inline: true },
       { name: `${slpEmoji} Unclaimed SLP`, value: `${inGameSlp}`, inline: true },
       { name: '🛑 Accrued fees', value: `${managerSlp}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
@@ -104,7 +112,7 @@ module.exports = {
         .setDescription('Team number')
         .setRequired(true)),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (!interaction.member.roles.cache.has('863179537324048414')) return;
     await getBalance(interaction);
   },
 };

@@ -2,7 +2,7 @@ const { SlashCommandBuilder, inlineCode } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { stripIndents } = require('common-tags');
 const { many } = require('../db/db');
-const { getRoninData } = require('../modules/ronin-data');
+const { getRoninData } = require('../modules/ronin-api');
 const { calcTeamStats } = require('../modules/team-stats');
 const { updateScholar } = require('../modules/database-querys');
 
@@ -34,7 +34,7 @@ const createScholarEmbed = (scholarTeams, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
   const scholarEmbed = scholarTeams.map(({
     teamId,
-    nextClaimDate,
+    nextClaim,
     inGameSlp,
     managerSlp,
     scholarSlp,
@@ -45,7 +45,7 @@ const createScholarEmbed = (scholarTeams, interaction) => {
       .setTitle(`Team #${teamId}`)
       .setDescription('')
       .addFields(
-        { name: '🗓 Next Claim', value: `${nextClaimDate}`, inline: true },
+        { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
         { name:  `${slpEmoji} Unclaimed SLP`, value: `${inGameSlp}`, inline: true },
         { name: '🛑 Accrued fees', value: `${managerSlp}`, inline: true },
         { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },

@@ -14,11 +14,11 @@ const calcPercentages = (num, total) => {
   return percentage.toFixed(2);
 };
 
-const calcBattlesSummary = async (battles, teamRoninAddress) => {
+const calcBattlesSummary = async (battles, teamAddress) => {
   const totalBattles = battles.length;
-  const wins = battles.filter(battle => battle.winner === teamRoninAddress).length;
+  const wins = battles.filter(battle => battle.winner === teamAddress).length;
   const draws = battles.filter(battle => battle.winner === 'draw').length;
-  const loses = battles.filter(battle => battle.winner !== teamRoninAddress && battle.winner !== 'draw').length;
+  const loses = battles.filter(battle => battle.winner !== teamAddress && battle.winner !== 'draw').length;
   const winsPercentage = calcPercentages(wins, totalBattles);
   const drawsPercentage = calcPercentages(draws, totalBattles);
   const losesPercentage = calcPercentages(loses, totalBattles);
@@ -88,18 +88,62 @@ const createBattlesEmbed = (battlesSummary, discordId) => {
       { name: '🥇 Arena Wins', value: `${wins} (${winsPercentage}%)`, inline: true },
       { name: '💔 Arena Loses', value: `${loses} (${losesPercentage}%)`, inline: true },
       { name: '🛡 Arena Draws', value: `${draws} (${drawsPercentage}%)`, inline: true },
-    );
+    )
+    .setImage(makeBattleChart(wins, loses, draws));
   return battleEmbed;
+};
+
+const makeBattleChart = (wins, loses, draws) => {
+  const chart = {
+    type: 'pie',
+    data: {
+      datasets: [
+        {
+          data: [wins, loses, draws],
+          backgroundColor: [
+            'rgb(0, 79, 115)',
+            'rgb(255, 166, 0)',
+            'rgb(200, 86, 153)',
+          ],
+          label: 'Arena Battles',
+        },
+      ],
+      labels: ['Wins', 'Loses', 'Draws'],
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          display: true,
+          align: 'center',
+          backgroundColor: '#404040',
+          borderRadius: 3,
+          color: '#fff',
+          font: {
+            size: 16,
+          },
+        },
+      },
+      legend: {
+        labels: {
+          fontColor: 'white',
+        },
+      },
+    },
+  };
+  const encodedChart = encodeURIComponent(JSON.stringify(chart));
+  const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+  return chartUrl;
 };
 
 const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
   // 1. We define the constants and find the ronin address of the scholar
-  const discordId = interaction.user.id;
+  const discordId = '926717025978576946';
   const { teamAddress } = await getTeamAddress(discordId);
   // 2. We get all the battles and the PVP information from the API
   const { battles } = await getScholarBattles(teamAddress);
-  const { rank, name, mmr } = await getRoninData(teamAddress);
+  const roninData = await getRoninData(teamAddress);
+  const { rank, name, mmr } = roninData[teamAddress];
   // 3. We sort the battles by won, tied and lost
   const battlesSummary = await calcBattlesSummary(battles, teamAddress);
   // 4. We calculate the hours passed since the last battle
@@ -121,7 +165,7 @@ module.exports = {
     .setName('battle-stats')
     .setDescription('Show your recent battles in arena'),
   async execute(interaction) {
-    if (!interaction.member.roles.cache.has('863179537324048414')) return;
+    if (interaction.member.roles.cache.has('863179537324048414')) return;
     await getBattleStats(interaction);
   },
 };

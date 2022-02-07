@@ -9,11 +9,19 @@ const calcDaysSinceLastClaim = (date) => {
   return days;
 };
 
-const calcScholarFee = (date, freeDays, dailyFee) => {
-  const daysSinceLastClaim = calcDaysSinceLastClaim(date);
-  let fee = dailyFee * (daysSinceLastClaim - freeDays);
-  fee = Math.max(0, fee);
-  return fee;
+const calcScholarFee = (date, freeDays, dailyFee, inGameSlp, mmr) => {
+  if (dailyFee > 1) {
+    const daysSinceLastClaim = calcDaysSinceLastClaim(date);
+    let fee = dailyFee * (daysSinceLastClaim - freeDays);
+    fee = Math.max(0, fee);
+    return fee;
+  } else if (mmr < 1300) {
+    return inGameSlp * 0.60;
+  } else if (mmr < 1700) {
+    return inGameSlp * 0.50;
+  } else {
+    return inGameSlp * 0.40;
+  }
 };
 
 const calcScholarSLP = (total, manager) => {
@@ -38,7 +46,7 @@ module.exports = {
     const { lastClaim: lastClaimUnix, nextClaim: nextClaimUnix, inGameSlp, mmr } = roninData[teamAddress];
     const lastClaim = formatDate(lastClaimUnix);
     const nextClaim = formatDate(nextClaimUnix);
-    const managerSlp = calcScholarFee(lastClaim, freeDays, dailyFee);
+    const managerSlp = calcScholarFee(lastClaim, freeDays, dailyFee, inGameSlp, mmr);
     const scholarSlp = calcScholarSLP(inGameSlp, managerSlp);
     const averageSlp = calcAverageSLP(inGameSlp, lastClaim);
     const todaySlp = inGameSlp - yesterdaySlp;
