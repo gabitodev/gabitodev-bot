@@ -1,4 +1,3 @@
-require('dotenv').config();
 const { Client, Intents, Collection } = require('discord.js');
 const { stripIndents } = require('common-tags');
 const fs = require('fs');
