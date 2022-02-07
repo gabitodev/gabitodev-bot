@@ -1,5 +1,6 @@
 const { Client, Intents, Collection } = require('discord.js');
 const { stripIndents } = require('common-tags');
+const { deployCommands } = require('./modules/deploy-commands');
 const fs = require('fs');
 
 const client = new Client({
@@ -18,7 +19,8 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-client.once('ready', () => {
+client.once('ready', async () => {
+  await deployCommands();
   console.log('Gabitodev Bot is online!');
 });
 
