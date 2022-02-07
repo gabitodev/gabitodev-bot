@@ -15,12 +15,14 @@ const calcScholarFee = (date, freeDays, dailyFee, inGameSlp, mmr) => {
     let fee = dailyFee * (daysSinceLastClaim - freeDays);
     fee = Math.max(0, fee);
     return fee;
-  } else if (mmr < 1300) {
+  } else if (mmr < 1300 && dailyFee === 0) {
     return inGameSlp * 0.60;
-  } else if (mmr < 1700) {
+  } else if (mmr < 1700 && dailyFee === 0) {
     return inGameSlp * 0.50;
-  } else {
+  } else if (mmr < 2200 && dailyFee === 0) {
     return inGameSlp * 0.40;
+  } else {
+    return inGameSlp * dailyFee;
   }
 };
 
