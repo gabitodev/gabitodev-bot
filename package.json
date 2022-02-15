@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r dotenv/config index.js",
-    "register": "node -r dotenv/config deploy-commands.js"
+    "dev": "nodemon -r dotenv/config index.js"
   },
   "author": "gabitodev",
   "license": "ISC",
