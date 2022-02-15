@@ -1,23 +1,21 @@
 const { stripIndents } = require('common-tags');
 const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { none } = require('../db/db');
+const { none } = require('../database');
 
 const insertScholar = async (scholarDiscordId, scholarName, scholarAddress) => {
-  const text = `
-  INSERT INTO scholars (discord_id, full_name, scholar_address)
-  VALUES ($1, $2, $3)`;
-  const values = [scholarDiscordId, scholarName, scholarAddress];
-  await none(text, values);
+  await none({
+    text: 'INSERT INTO scholars (discord_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
+    values: [scholarDiscordId, scholarName, scholarAddress]
+  });
 };
 
 const createScholar = async (interaction) => {
   // 1. We define the variables
-  const scholarRoleId = '863179537324048414';
-  const scholarDiscordId = interaction.options.getString('discord-id');
+  const scholarDiscordId = interaction.options.getUser('discord-user').id;
   const scholarName = interaction.options.getString('name');
   const scholarAddress = interaction.options.getString('ronin-address');
   const member = await interaction.guild.members.fetch(scholarDiscordId);
-  const role = await interaction.guild.roles.fetch(scholarRoleId);
+  const role = await interaction.guild.roles.fetch(process.env.SCHOLAR_ROLE_ID);
   // 2. We create the scholar in the database and add Scholar Role
   await insertScholar(scholarDiscordId, scholarName, scholarAddress);
   member.roles.add(role);
@@ -36,10 +34,10 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('create-scholar')
     .setDescription('Creates a new scholar')
-    .addStringOption(option =>
+    .addUserOption(option =>
       option
-        .setName('discord-id')
-        .setDescription('Scholar Discord ID')
+        .setName('discord-user')
+        .setDescription('Scholar discord user')
         .setRequired(true))
     .addStringOption(option =>
       option
@@ -52,7 +50,7 @@ module.exports = {
         .setDescription('Scholar ronin address')
         .setRequired(false)),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (interaction.user.id !== interaction.guild.ownerId) return;
     await createScholar(interaction);
   },
 };
