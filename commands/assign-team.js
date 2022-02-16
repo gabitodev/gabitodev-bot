@@ -3,12 +3,14 @@ const { none } = require('../database');
 
 const assignTeam = async (interaction) => {
   // 1. We define the variables
-  const teamId = interaction.options.getNumber('team-number');
-  const discordId = interaction.options.getString('discord-id');
+  const teamId = interaction.options.getNumber('team-id');
+  const discordId = interaction.options.getUser('discord-user').id;
+
   // 2. We update the databse
   await none('UPDATE teams SET discord_id = $1 WHERE team_id = $2', [discordId, teamId]);
+
   // 3. Display the response to the user
-  await interaction.reply(`Successfully assigned team #${teamId} to scholar <@${discordId}>`);
+  await interaction.reply(`Successfully assigned team #${teamId} to scholar <@${discordId}>.`);
 };
 
 module.exports = {
@@ -17,16 +19,16 @@ module.exports = {
     .setDescription('Assign a team to the scholar')
     .addNumberOption(option =>
       option
-        .setName('team-number')
+        .setName('team-id')
         .setDescription('Team number to assign')
         .setRequired(true))
-    .addStringOption(option =>
+    .addUserOption(option =>
       option
-        .setName('discord-id')
-        .setDescription('Scholar Discord ID')
+        .setName('discord-user')
+        .setDescription('Scholar discord user')
         .setRequired(true)),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (interaction.user.id !== interaction.guild.ownerId) return;
     await assignTeam(interaction);
   },
 };
