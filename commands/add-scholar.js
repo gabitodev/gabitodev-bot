@@ -38,8 +38,8 @@ const addScholar = async (interaction) => {
       content: stripIndents`
       ${bold('Successfully created a new scholar!')}
       User: <@${scholarDiscordId}>
-      Name: ${inlineCode(`${scholarName}`)}
-      Ronin Address: ${inlineCode(`${scholarAddress}`)}
+      Name: ${inlineCode(scholarName)}
+      Ronin Address: ${inlineCode(scholarAddress)}
       Role: <@&${process.env.SCHOLAR_ROLE_ID}>`,
     });
   } catch (error) {
