@@ -10,7 +10,6 @@ const validFreeDays = (freeDays) => {
   }
 };
 
-
 const createTeam = async (interaction) => {
   try {
     // 1. We define the variables
