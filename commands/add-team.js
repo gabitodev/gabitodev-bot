@@ -73,7 +73,7 @@ module.exports = {
         .setDescription('Days without fee')
         .setRequired(false)),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has('863179537324048414')) return;
+    if (interaction.user.id !== interaction.guild.ownerId) return;
     await createTeam(interaction);
   },
 };
