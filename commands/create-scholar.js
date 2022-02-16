@@ -5,7 +5,7 @@ const { none } = require('../database');
 const insertScholar = async (scholarDiscordId, scholarName, scholarAddress) => {
   await none({
     text: 'INSERT INTO scholars (discord_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
-    values: [scholarDiscordId, scholarName, scholarAddress]
+    values: [scholarDiscordId, scholarName, scholarAddress],
   });
 };
 
@@ -16,6 +16,8 @@ const createScholar = async (interaction) => {
   const scholarAddress = interaction.options.getString('ronin-address');
   const member = await interaction.guild.members.fetch(scholarDiscordId);
   const role = await interaction.guild.roles.fetch(process.env.SCHOLAR_ROLE_ID);
+
+  if (!role) return await interaction.reply('Wrong role! Make sure it is correct');
   // 2. We create the scholar in the database and add Scholar Role
   await insertScholar(scholarDiscordId, scholarName, scholarAddress);
   member.roles.add(role);
@@ -26,7 +28,7 @@ const createScholar = async (interaction) => {
     User: <@${scholarDiscordId}>
     Name: ${inlineCode(`${scholarName}`)}
     Ronin Address: ${inlineCode(`${scholarAddress}`)}
-    Role: <@&${scholarRoleId}>`,
+    Role: <@&${process.env.SCHOLAR_ROLE_ID}>`,
   });
 };
 

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { none } = require('../db/db');
+const { none } = require('../database');
 
 const assignFreeDays = async (interaction) => {
   // 1. We define the variables

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
 const { AsciiTable3 } = require('ascii-table3');
-const { many } = require('../db/db');
+const { many } = require('../database');
 
 const getTop = async () => {
   const text = `

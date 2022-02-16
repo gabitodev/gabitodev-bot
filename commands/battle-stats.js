@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { DateTime, Interval } = require('luxon');
-const { one } = require('../db/db');
+const { one } = require('../database');
 const { getRoninData, getScholarBattles } = require('../modules/ronin-api');
 
 const getTeamAddress = async (discordID) => {

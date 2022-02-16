@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, inlineCode } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { stripIndents } = require('common-tags');
-const { many } = require('../db/db');
+const { many } = require('../database');
 const { getRoninData } = require('../modules/ronin-api');
 const { calcTeamStats } = require('../modules/team-stats');
 const { updateScholar } = require('../modules/database-querys');

@@ -1,4 +1,4 @@
-const { none } = require('../db/db');
+const { none } = require('../database');
 
 module.exports = {
   async updateScholar({ lastClaim, nextClaim, inGameSlp, managerSlp, scholarSlp, mmr, averageSlp, todaySlp, teamId }) {

@@ -3,7 +3,7 @@ const { AsciiTable3 } = require('ascii-table3');
 const { inlineCode, bold, codeBlock, SlashCommandBuilder } = require('@discordjs/builders');
 const { stripIndents } = require('common-tags');
 const CoinGecko = require('coingecko-api');
-const { many, none } = require('../db/db');
+const { many, none } = require('../database');
 const { getRoninData } = require('../modules/ronin-api');
 
 const getScholars = async () => {

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { many } = require('../db/db');
+const { many } = require('../database');
 const { getRoninData } = require('../modules/ronin-api');
 const { calcTeamStats } = require('../modules/team-stats');
 const { updateScholar } = require('../modules/database-querys');

@@ -1,6 +1,6 @@
 const { stripIndents } = require('common-tags');
 const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { none } = require('../db/db');
+const { none } = require('../database');
 
 const insertTeam = async (teamId, teamAddress, dailyFee, freeDays) => {
   const text = `
