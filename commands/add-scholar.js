@@ -28,7 +28,7 @@ const addScholar = async (interaction) => {
 
     // 2. We create the scholar in the database and add Scholar Role
     await none({
-      text: 'INSERT INTO scholars (scholar_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
+      text: 'INSERT INTO scholars (discord_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
       values: [scholarDiscordId, scholarName, scholarAddress],
     });
     member.roles.add(role);
