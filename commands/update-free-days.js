@@ -1,13 +1,17 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { none } = require('../database');
+const { result } = require('../database');
 
 const updateFreeDays = async (interaction) => {
   // 1. We define the variables
   const teamId = interaction.options.getString('team-id');
   const freeDays = interaction.options.getNumber('free-days');
 
-  // 2. We remove the scholar from the database
-  await none('UPDATE teams SET free_days = $1 WHERE team_id = $2', [freeDays, teamId]);
+  // 2. We update the free days to the team
+  const { rowCount } = await result({
+    text: 'UPDATE teams SET free_days = $1 WHERE team_id = $2',
+    values: [freeDays, teamId],
+  });
+  if (rowCount === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
 
   // 3. Display the response to the user
   await interaction.reply(`Assigned ${freeDays} days without fee to team #${teamId}.`);
