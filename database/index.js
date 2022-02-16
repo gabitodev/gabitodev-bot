@@ -16,7 +16,7 @@ const camelizeColumns = (data) => {
       }
     }
   }
-}
+};
 
 const config = {
   host: process.env.HOST_DB,
