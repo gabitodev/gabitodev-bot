@@ -83,7 +83,7 @@ const createBattlesEmbed = (battlesSummary, discordId) => {
     losesPercentage,
     totalBattles } = battlesSummary;
   const battleEmbed = new MessageEmbed()
-    .setColor('#eec300')
+    .setColor('#8ccf60')
     .setTitle('Scholar Recent Battles')
     .setDescription(`Recent battles for scholar <@${discordId}> `)
     .addFields(

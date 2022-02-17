@@ -58,7 +58,7 @@ const createTeamEmbed = async (teamStats, interaction) => {
   const nextClaimIso = formatToIso(nextClaim);
   const shcolarSlpInUsd = await getSlpInUsd(scholarSlp);
   const teamEmbed = new MessageEmbed ()
-    .setColor('#eec300')
+    .setColor('#8ccf60')
     .setTitle('Scholar Balance')
     .setDescription(`Balance for scholar <@${interaction.user.id}>`)
     .addFields(
