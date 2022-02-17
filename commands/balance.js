@@ -78,6 +78,7 @@ const createTeamEmbed = async (teamStats, interaction) => {
 
 const getBalance = async (interaction) => {
   await interaction.reply('Loading the balance of your team...');
+
   // 1. We get the scholar team in the database
   const teamId = interaction.options.getNumber('team-id');
   const team = await getScholarTeam(teamId);
