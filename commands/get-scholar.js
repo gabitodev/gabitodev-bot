@@ -23,6 +23,14 @@ const getScholar = async (discordId) => {
   }
 };
 
+const convertDailyFee = (dailyFee) => {
+  if (dailyFee > 1) {
+    return { name: '🔒 Daily Fee', value: `${dailyFee} SLP`, inline: true };
+  } else {
+    return { name: '🔒 Manager Share', value: `${dailyFee * 100}%`, inline: true };
+  }
+};
+
 const getScholarTeams = async (scholar) => {
   const scholarTeams = [];
   for (const team of scholar) {
@@ -34,13 +42,14 @@ const getScholarTeams = async (scholar) => {
   return scholarTeams;
 };
 
-const createScholarEmbed = (scholarTeams, scholarAddress, discordId) => {
+const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId, dailyFee) => {
+  const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
   const scholarEmbed = scholarTeams.map(({
     teamId,
     nextClaim,
+    inGameSlp,
     scholarSlp,
-    averageSlp,
-    mmr }) => {
+  }) => {
     const embed = new MessageEmbed()
       .setColor('#eec300')
       .setTitle('Scholar Information')
@@ -50,9 +59,9 @@ const createScholarEmbed = (scholarTeams, scholarAddress, discordId) => {
         { name: '🆔 Account Name', value: `Gabitodev #${teamId}`, inline: true },
         { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
         { name: '🗓 Days to Next Claim', value: `${daysToNextClaim(nextClaim)}`, inline: true },
+        { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
+        convertDailyFee(dailyFee),
         { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
-        { name: '📈 MMR', value: `${mmr}`, inline: true },
-        { name: '📊 Average SLP', value: `${averageSlp}`, inline: true },
       );
     return embed;
   });
@@ -73,12 +82,12 @@ const getScholarInfo = async (interaction) => {
   const scholarTeams = await getScholarTeams(scholar);
 
   // 4. We get the scholar address
-  const { scholarAddress } = scholar[0];
+  const { scholarAddress, dailyFee } = scholar[0];
 
   // 5. Display the response to the user
   await interaction.editReply({
     content: 'Loaded the scholar information correctly!',
-    embeds: createScholarEmbed(scholarTeams, scholarAddress, discordId),
+    embeds: createScholarEmbed(scholarTeams, interaction, scholarAddress, discordId, dailyFee),
   });
 };
 
