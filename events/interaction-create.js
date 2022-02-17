@@ -13,6 +13,8 @@ module.exports = {
       } else {
         return await interaction.editReply('An error has occurred with the command! Contact the owner of the discord server.');
       }
+    } finally {
+      console.log(`The command ${interaction.commandName} was executed by ${interaction.user.name}`);
     }
   },
 };
