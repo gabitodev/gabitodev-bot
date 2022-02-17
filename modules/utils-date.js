@@ -17,6 +17,10 @@ module.exports = {
     const lastClaimDate = DateTime.fromISO(lastClaim);
     const difference = Interval.fromDateTimes(now, lastClaimDate);
     const days = difference.length('days');
-    return `${days.toFixed(0)} days`;
+    if (!days) {
+      return 'Ready to claim';
+    } else {
+      return `${days.toFixed(0)} days`;
+    }
   },
 };
