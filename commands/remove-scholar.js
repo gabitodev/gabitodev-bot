@@ -15,7 +15,7 @@ const removeScholar = async (interaction) => {
   member.kick('He will no longer be part of the scholarship');
 
   // 3. Display the response to the user
-  await interaction.reply(`Successfully removed and kicked the scholar <@${discordId}>`);
+  await interaction.reply(`Successfully removed and kicked the scholar <@${discordId}>.`);
 };
 
 module.exports = {
