@@ -19,7 +19,7 @@ const createTeam = async (interaction) => {
     const freeDays = validFreeDays(interaction.options.getNumber('free-days'));
 
     // Check is ronin is valid and use the ronin prefix
-    if (!teamAddress.startsWith('ronin:') || teamAddress.length !== 42) {
+    if (!teamAddress.startsWith('0x') || teamAddress.length !== 42) {
       return await interaction.reply(`Wrong address! Make sure it starts with the ${inlineCode('0x')} prefix and is complete.`);
     }
 
