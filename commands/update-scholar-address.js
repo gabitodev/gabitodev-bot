@@ -9,7 +9,7 @@ const validateRoninAddress = (scholarAddress) => {
   }
 };
 
-const changeScholarRonin = async (interaction) => {
+const updateScholarRonin = async (interaction) => {
   // 1. We define the variables
   const scholarAddress = interaction.options.getString('ronin-address');
   const discordId = interaction.options.getUser('discord-user').id;
@@ -46,6 +46,6 @@ module.exports = {
         .setRequired(true)),
   async execute(interaction) {
     if (interaction.user.id !== interaction.guild.ownerId) return;
-    await changeScholarRonin(interaction);
+    await updateScholarRonin(interaction);
   },
 };
