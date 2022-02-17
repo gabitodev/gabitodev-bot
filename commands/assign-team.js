@@ -12,7 +12,7 @@ const assignTeam = async (interaction) => {
       text: 'UPDATE teams SET discord_id = $1 WHERE team_id = $2',
       values: [discordId, teamId],
     });
-    if (rowCount === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
+    if (rowCount === 0) return await interaction.reply('The team could not be assigned because it does not exist in the database.');
 
     // 3. Display the response to the user
     await interaction.reply(`Successfully assigned team #${teamId} to scholar <@${discordId}>.`);
@@ -21,6 +21,7 @@ const assignTeam = async (interaction) => {
       return await interaction.reply('The team could not be assigned because the discord user is not a scholar.');
     } else {
       console.log(error);
+      return await interaction.reply('An error has occurred with the command! Contact the owner of the discord server.');
     }
   }
 };
