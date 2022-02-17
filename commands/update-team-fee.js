@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { result } = require('../database');
 
-
 const setTeamFee = async (interaction) => {
   // 1. We define the variables
   const teamId = interaction.options.getNumber('team-id');
