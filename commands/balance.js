@@ -1,14 +1,14 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { getRoninData } = require('../modules/ronin-api');
-const { one } = require('../database');
+const { oneOrNone } = require('../database');
 const { calcHoursPassed, daysToNextClaim } = require('../modules/utils-date');
 const { calcTeamStats } = require('../modules/team-stats');
 const { updateScholar } = require('../modules/database-querys');
 const { getSlpInUsd } = require('../modules/coingecko-api');
 
 const getScholarTeam = async (teamId) => {
-  const scholarTeam = await one({
+  const scholarTeam = await oneOrNone({
     text: 'SELECT * FROM teams WHERE team_id = $1',
     values: [teamId],
   });
