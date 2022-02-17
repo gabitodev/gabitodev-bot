@@ -36,5 +36,6 @@ module.exports = {
       const teamStats = calcTeamStats(scholarData, roninData);
       updateScholar(teamStats);
     }
+    return 'success';
   },
 };

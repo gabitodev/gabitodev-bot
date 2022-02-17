@@ -52,7 +52,9 @@ const getSummary = async (interaction) => {
   if (!mainAccountSlp) return await interaction.editReply('No owner ronin address added! Make sure to add a valid ronin address.');
 
   // Update the scholarship
-  await updateScholarship();
+  const isUpdated = await updateScholarship();
+
+  if (isUpdated !== 'success') return await interaction.reply('There was an error updating the database. Try again or verify that you have scholars');
 
   // 2. We obtain all the scholars
   const scholars = await getScholars();
