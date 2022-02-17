@@ -61,13 +61,17 @@ const createScholarEmbed = (scholarTeams, scholarAddress, discordId) => {
 
 const getScholarInfo = async (interaction) => {
   await interaction.reply('Loading scholar information...');
+
   // 1. We obtain the information of the scholar
   const discordId = interaction.options.getUser('discord-user').id;
   const scholar = await getScholar(discordId);
+
   // 2. We verify that the scholar exists in the database
   if (!scholar) return interaction.editReply('Failed to get the information because the discord user is not a scholar.');
+
   // 3. We calc the stats of the team and update the database
   const scholarTeams = await getScholarTeams(scholar);
+
   // 4. We get the scholar address
   const { scholarAddress } = scholar[0];
 
