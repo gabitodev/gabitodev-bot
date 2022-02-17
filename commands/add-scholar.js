@@ -47,6 +47,7 @@ const addScholar = async (interaction) => {
       return await interaction.reply('A scholar already exists with that discord user.');
     } else {
       console.log(error);
+      await interaction.editReply('An error has occurred with the command! Contact the owner of the discord server.');
     }
   }
 };
