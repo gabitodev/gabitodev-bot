@@ -1,5 +1,3 @@
-const { stripIndents } = require('common-tags');
-
 module.exports = {
   name: 'interactionCreate',
   async execute(interaction) {
@@ -11,17 +9,9 @@ module.exports = {
     } catch (error) {
       console.error(error);
       if (!interaction.replied) {
-        await interaction.reply({
-          content: stripIndents`
-          An error has occurred with the command!
-          Fix me <@772619893278507018>😭`,
-        });
+        return await interaction.reply('An error has occurred with the command! Contact the owner of the discord server.');
       } else {
-        await interaction.editReply({
-          content: stripIndents`
-          An error has occurred with the command!
-          Fix me <@772619893278507018>😭`,
-        });
+        return await interaction.editReply('An error has occurred with the command! Contact the owner of the discord server.');
       }
     }
   },
