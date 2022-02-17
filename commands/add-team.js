@@ -44,6 +44,7 @@ const createTeam = async (interaction) => {
       return await interaction.reply('A team already exists with that number or ronin address.');
     } else {
       console.log(error);
+      return await interaction.editReply('An error has occurred with the command! Contact the owner of the discord server.');
     }
   }
 };
