@@ -51,7 +51,7 @@ const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId
     scholarSlp,
   }) => {
     const embed = new MessageEmbed()
-      .setColor('##8ccf60')
+      .setColor('#8ccf60')
       .setTitle('Scholar Information')
       .setDescription(`<@${discordId}>`)
       .addFields(
