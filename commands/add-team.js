@@ -19,8 +19,8 @@ const createTeam = async (interaction) => {
     const freeDays = validFreeDays(interaction.options.getNumber('free-days'));
 
     // Check is ronin is valid and use the ronin prefix
-    if (!teamAddress.startsWith('ronin:') || teamAddress.length !== 46) {
-      return await interaction.reply(`Wrong address! Make sure it starts with the ${inlineCode('ronin:')} prefix and is complete.`);
+    if (!teamAddress.startsWith('ronin:') || teamAddress.length !== 42) {
+      return await interaction.reply(`Wrong address! Make sure it starts with the ${inlineCode('0x')} prefix and is complete.`);
     }
 
     // 2. We create the team in the database
@@ -60,7 +60,7 @@ module.exports = {
     .addStringOption(option =>
       option
         .setName('ronin-address')
-        .setDescription('Team ronin address')
+        .setDescription('Team ronin address. Starts with 0x')
         .setRequired(true))
     .addNumberOption(option =>
       option
