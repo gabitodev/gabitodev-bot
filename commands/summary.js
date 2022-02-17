@@ -84,6 +84,7 @@ const getSummary = async (interaction) => {
     `,
   });
   await interaction.followUp(codeBlock(table));
+
   // 7. Set the yesterday SLP equal to the unclaimed SLP
   for (const { inGameSlp, teamId } of scholars) {
     await none({
