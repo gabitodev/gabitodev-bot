@@ -4,7 +4,6 @@ const { stripIndents } = require('common-tags');
 const { many, none } = require('../database');
 const { getRoninData } = require('../modules/ronin-api');
 const { getSlpInUsd } = require('../modules/coingecko-api');
-const { updateScholarship } = require('../modules/update-scholarship');
 
 const getScholars = async () => {
   const scholars = await many({
@@ -50,11 +49,6 @@ const getSummary = async (interaction) => {
   const { totalSlp: mainAccountSlp } = mainAccount[process.env.MANAGER_RONIN];
 
   if (!mainAccountSlp) return await interaction.editReply('No owner ronin address added! Make sure to add a valid ronin address.');
-
-  // Update the scholarship
-  const isUpdated = await updateScholarship();
-
-  if (isUpdated !== 'success') return await interaction.reply('There was an error updating the database. Try again or verify that you have scholars');
 
   // 2. We obtain all the scholars
   const scholars = await getScholars();
