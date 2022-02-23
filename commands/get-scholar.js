@@ -1,9 +1,9 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { many } = require('../database');
-const { getRoninData } = require('../modules/ronin-api');
-const { calcTeamStats } = require('../modules/team-stats');
-const { daysToNextClaim } = require('../modules/utils-date');
+const { getRoninData } = require('../modules/ronin-data');
+const { getTeamSummary } = require('../modules/team-summary');
+const { getDaysToNextClaim } = require('../modules/days-next-claim');
 
 const getScholar = async (discordId) => {
   try {
@@ -36,7 +36,7 @@ const getScholarTeams = async (scholar) => {
   for (const team of scholar) {
     const { teamAddress } = team;
     const roninData = await getRoninData(teamAddress);
-    const teamStats = calcTeamStats(team, roninData);
+    const teamStats = getTeamSummary(team, roninData);
     scholarTeams.push(teamStats);
   }
   return scholarTeams;
@@ -50,6 +50,7 @@ const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId
     inGameSlp,
     scholarSlp,
   }) => {
+    const daysToNextClaim = getDaysToNextClaim(nextClaim);
     const embed = new MessageEmbed()
       .setColor('#8ccf60')
       .setTitle('Scholar Information')
@@ -58,7 +59,7 @@ const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId
         { name: '🏠 Ronin Address', value: `${scholarAddress}`, inline: false },
         { name: '🆔 Account Name', value: `Gabitodev #${teamId}`, inline: true },
         { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
-        { name: '🗓 Days to Next Claim', value: `${daysToNextClaim(nextClaim)}`, inline: true },
+        { name: '🗓 Days to Next Claim', value: `${daysToNextClaim}`, inline: true },
         { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
         convertDailyFee(dailyFee),
         { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
