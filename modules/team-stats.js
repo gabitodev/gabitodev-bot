@@ -42,27 +42,27 @@ const calcAverageSLP = (slp, date) => {
   }
 };
 
-module.exports = {
-  calcTeamStats(teamData, roninData) {
-    const { freeDays, teamId, dailyFee, teamAddress, yesterdaySlp } = teamData;
-    const { lastClaim: lastClaimUnix, nextClaim: nextClaimUnix, inGameSlp, mmr } = roninData[teamAddress];
-    const lastClaim = formatDate(lastClaimUnix);
-    const nextClaim = formatDate(nextClaimUnix);
-    const managerSlp = calcScholarFee(lastClaim, freeDays, dailyFee, inGameSlp, mmr);
-    const scholarSlp = calcScholarSLP(inGameSlp, managerSlp);
-    const averageSlp = calcAverageSLP(inGameSlp, lastClaim);
-    const todaySlp = inGameSlp - yesterdaySlp;
-    const teamStats = {
-      teamId,
-      lastClaim,
-      nextClaim,
-      inGameSlp,
-      managerSlp,
-      scholarSlp,
-      mmr,
-      averageSlp,
-      todaySlp,
-    };
-    return teamStats;
-  },
+const calcTeamStats = (teamData, roninData) => {
+  const { freeDays, teamId, dailyFee, teamAddress, yesterdaySlp } = teamData;
+  const { lastClaim: lastClaimUnix, nextClaim: nextClaimUnix, inGameSlp, mmr } = roninData[teamAddress];
+  const lastClaim = formatDate(lastClaimUnix);
+  const nextClaim = formatDate(nextClaimUnix);
+  const managerSlp = calcScholarFee(lastClaim, freeDays, dailyFee, inGameSlp, mmr);
+  const scholarSlp = calcScholarSLP(inGameSlp, managerSlp);
+  const averageSlp = calcAverageSLP(inGameSlp, lastClaim);
+  const todaySlp = inGameSlp - yesterdaySlp;
+  const teamStats = {
+    teamId,
+    lastClaim,
+    nextClaim,
+    inGameSlp,
+    managerSlp,
+    scholarSlp,
+    mmr,
+    averageSlp,
+    todaySlp,
+  };
+  return teamStats;
 };
+
+module.exports.calcTeamStats = calcTeamStats;
