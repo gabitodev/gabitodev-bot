@@ -56,4 +56,4 @@ const getTeamSummary = (teamData, roninData) => {
   return teamStats;
 };
 
-module.exports.calcTeamStats = getTeamSummary;
+module.exports.getTeamSummary = getTeamSummary;
