@@ -36,8 +36,8 @@ const getScholarTeams = async (scholar) => {
   for (const team of scholar) {
     const { teamAddress } = team;
     const roninData = await getRoninData(teamAddress);
-    const teamStats = getTeamSummary(team, roninData);
-    scholarTeams.push(teamStats);
+    const teamSummary = getTeamSummary(team, roninData);
+    scholarTeams.push(teamSummary);
   }
   return scholarTeams;
 };
