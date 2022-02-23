@@ -1,11 +1,12 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { getRoninData } = require('../modules/ronin-api');
+const { DateTime, Interval } = require('luxon');
+const { getRoninData } = require('../modules/ronin-data');
 const { oneOrNone } = require('../database');
-const { calcHoursPassed, daysToNextClaim } = require('../modules/utils-date');
-const { calcTeamStats } = require('../modules/team-stats');
+const { getDaysToNextClaim } = require('../modules/days-next-claim');
+const { getTeamSummary } = require('../modules/team-summary');
 const { updateScholar } = require('../modules/database-querys');
-const { getSlpInUsd } = require('../modules/coingecko-api');
+const { convertSlpToUsd } = require('../modules/slp-convertion');
 
 const getScholarTeam = async (teamId) => {
   const scholarTeam = await oneOrNone({
@@ -15,34 +16,13 @@ const getScholarTeam = async (teamId) => {
   return scholarTeam;
 };
 
-// const makeBalanceChart = (scholarSlp, managerSlp) => {
-//   const chart = {
-//     type: 'pie',
-//     data: {
-//       datasets: [
-//         {
-//           data: [Math.max(0, scholarSlp), managerSlp],
-//           backgroundColor: [
-//             'rgb(118, 210, 117)',
-//             'rgb(255, 134, 124)',
-//           ],
-//           label: 'SLP TOTAL',
-//         },
-//       ],
-//       labels: ['Scholar', 'Fees'],
-//     },
-//     options: {
-//       legend: {
-//         labels: {
-//           fontColor: 'white',
-//         },
-//       },
-//     },
-//   };
-//   const encodedChart = encodeURIComponent(JSON.stringify(chart));
-//   const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
-//   return chartUrl;
-// };
+const getHoursPassedSinceUpdate = (updatedAt) => {
+  const now = DateTime.now();
+  const updatedAtDate = DateTime.fromJSDate(updatedAt);
+  const difference = Interval.fromDateTimes(updatedAtDate, now);
+  const hours = difference.length('hour');
+  return hours;
+};
 
 const formatToIso = (date) => {
   if (date instanceof Date) {
@@ -56,23 +36,23 @@ const createTeamEmbed = async (teamStats, interaction) => {
   const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
   const { teamId, nextClaim, inGameSlp, managerSlp, scholarSlp, averageSlp, todaySlp } = teamStats;
   const nextClaimIso = formatToIso(nextClaim);
-  const shcolarSlpInUsd = await getSlpInUsd(scholarSlp);
-  const teamEmbed = new MessageEmbed ()
+  const shcolarSlpInUsd = await convertSlpToUsd(scholarSlp);
+  const daysToNextClaim = getDaysToNextClaim(nextClaimIso);
+  const teamEmbed = new MessageEmbed()
     .setColor('#8ccf60')
     .setTitle('Scholar Balance')
     .setDescription(`Balance for scholar <@${interaction.user.id}>`)
     .addFields(
       { name: '📖 Team', value: `Gabitodev #${teamId}`, inline: true },
       { name: '🗓 Next Claim', value: `${nextClaimIso}`, inline: true },
-      { name: '🗓 Days to Next Claim', value: `${daysToNextClaim(nextClaimIso)}`, inline: true },
+      { name: '🗓 Days to Next Claim', value: `${daysToNextClaim}`, inline: true },
       { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
-      { name: '🛑 Accrued fees', value: `${managerSlp}`, inline: true },
+      { name: '🛑 Manager SLP', value: `${managerSlp}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
       { name: '📊 Average SLP', value: `${averageSlp}`, inline: true },
       { name: '🔥 Today SLP', value: `${todaySlp}`, inline: true },
       { name: '💵 Scholar USD', value: `${shcolarSlpInUsd}`, inline: true },
     );
-    // .setImage(`${makeBalanceChart(scholarSlp, managerSlp)}`);
   return teamEmbed;
 };
 
@@ -92,8 +72,8 @@ const getBalance = async (interaction) => {
   }
 
   // 3. We verify that 3 hours have not passed since the last update of the database
-  const hoursSinceLastUpdate = calcHoursPassed(updatedAt);
-  if (hoursSinceLastUpdate <= 3) {
+  const hoursSinceUpdate = getHoursPassedSinceUpdate(updatedAt);
+  if (hoursSinceUpdate <= 3) {
     return await interaction.editReply({
       content: 'Loaded the balance correctly!',
       embeds: [await createTeamEmbed(team, interaction)],
@@ -103,15 +83,15 @@ const getBalance = async (interaction) => {
     const roninData = await getRoninData(teamAddress);
 
     // 5. We use the data to do the calculations
-    const teamStats = calcTeamStats(team, roninData);
+    const teamSummary = getTeamSummary(team, roninData);
 
     // 6. We update the database
-    await updateScholar(teamStats);
+    await updateScholar(teamSummary);
 
     // 7. Display the response to the user
     await interaction.editReply({
       content: 'Loaded the balance correctly!',
-      embeds: [await createTeamEmbed(teamStats, interaction)],
+      embeds: [await createTeamEmbed(teamSummary, interaction)],
     });
   }
 };
