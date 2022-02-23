@@ -2,8 +2,8 @@ const { AsciiTable3 } = require('ascii-table3');
 const { inlineCode, bold, codeBlock, SlashCommandBuilder } = require('@discordjs/builders');
 const { stripIndents } = require('common-tags');
 const { many, none } = require('../database');
-const { getRoninData } = require('../modules/ronin-api');
-const { getSlpInUsd } = require('../modules/coingecko-api');
+const { getRoninData } = require('../modules/ronin-data');
+const { convertSlpToUsd } = require('../modules/slp-convertion');
 
 const getScholars = async () => {
   const scholars = await many({
@@ -60,7 +60,7 @@ const getSummary = async (interaction) => {
   const totalManagerSlp = scholars.map(({ managerSlp }) => managerSlp).reduce((sum, item) => sum += item, 0);
   const totalInGameSlp = scholars.map(({ inGameSlp }) => inGameSlp).reduce((sum, item) => sum += item, 0);
   const totalOwnerSlp = mainAccountSlp + totalManagerSlp;
-  const totalOwnerUsd = await getSlpInUsd(totalOwnerSlp);
+  const totalOwnerUsd = await convertSlpToUsd(totalOwnerSlp);
 
   // 5. We create the table
   const table = new AsciiTable3('')
