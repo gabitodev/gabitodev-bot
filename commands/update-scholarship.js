@@ -1,6 +1,6 @@
 const { many } = require('../database');
-const { getRoninData } = require('../modules/ronin-api');
-const { calcTeamStats } = require('../modules/team-stats');
+const { getRoninData } = require('../modules/ronin-data');
+const { getTeamSummary } = require('../modules/team-summary');
 const { updateScholar } = require('../modules/database-querys');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
@@ -18,7 +18,6 @@ const getScholars = async () => {
   } catch (error) {
     return null;
   }
-
 };
 
 const updateScholarship = async (interaction) => {
@@ -33,8 +32,8 @@ const updateScholarship = async (interaction) => {
 
   // 4. We update each scholar to the database
   for (const scholarData of scholars) {
-    const teamStats = calcTeamStats(scholarData, roninData);
-    updateScholar(teamStats);
+    const teamSummary = getTeamSummary(scholarData, roninData);
+    updateScholar(teamSummary);
   }
   await interaction.reply('The scholarship has been updated.');
 };
