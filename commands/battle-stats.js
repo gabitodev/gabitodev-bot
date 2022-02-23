@@ -2,7 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { DateTime, Interval } = require('luxon');
 const { one } = require('../database');
-const { getRoninData, getScholarBattles } = require('../modules/ronin-api');
+const { getRoninData } = require('../modules/ronin-data');
+const { getBattlesData } = require('../modules/battles-data');
 
 const getTeamAddress = async (discordId) => {
   try {
@@ -22,7 +23,7 @@ const calcPercentages = (num, total) => {
   return percentage.toFixed(2);
 };
 
-const calcBattlesSummary = async (battles, teamAddress) => {
+const getBattlesSummary = async (battles, teamAddress) => {
   const totalBattles = battles.length;
   const wins = battles.filter(battle => battle.winner === teamAddress).length;
   const draws = battles.filter(battle => battle.winner === 'draw').length;
@@ -42,7 +43,7 @@ const calcBattlesSummary = async (battles, teamAddress) => {
   return battlesSummary;
 };
 
-const calcLastBattleinHours = (battleDate) => {
+const getLastBattleinHours = (battleDate) => {
   const now = DateTime.now();
   const lastBattleDate = (DateTime.fromISO(battleDate)).minus({ hours: 3 });
   const difference = Interval.fromDateTimes(lastBattleDate, now);
@@ -55,7 +56,7 @@ const calcLastBattleinHours = (battleDate) => {
   }
 };
 
-const calcAverageSlpPerBattle = (mmr) => {
+const getAverageSlpPerBattle = (mmr) => {
   if (mmr <= 1300 && mmr >= 1100) {
     return '6 SLP';
   } else if (mmr < 1500 && mmr > 1300) {
@@ -82,6 +83,7 @@ const createBattlesEmbed = (battlesSummary, discordId) => {
     drawsPercentage,
     losesPercentage,
     totalBattles } = battlesSummary;
+  const averageSlpPerBattle = getAverageSlpPerBattle(mmr);
   const battleEmbed = new MessageEmbed()
     .setColor('#8ccf60')
     .setTitle('Scholar Recent Battles')
@@ -92,7 +94,7 @@ const createBattlesEmbed = (battlesSummary, discordId) => {
       { name: '💢 Arena Battles', value: `Last ${totalBattles}`, inline: true },
       { name: '⚔ Arena MMR', value: `${mmr}`, inline: true },
       { name: '🏆 Arena Rank', value: `${rank}`, inline: true },
-      { name: '📊 SLP Per Battle', value: `${calcAverageSlpPerBattle(mmr)}`, inline: true },
+      { name: '📊 SLP Per Battle', value: `${averageSlpPerBattle}`, inline: true },
       { name: '🥇 Arena Wins', value: `${wins} (${winsPercentage}%)`, inline: true },
       { name: '💔 Arena Loses', value: `${loses} (${losesPercentage}%)`, inline: true },
       { name: '🛡 Arena Draws', value: `${draws} (${drawsPercentage}%)`, inline: true },
@@ -111,16 +113,16 @@ const getBattleStats = async (interaction) => {
   if (!teamAddress) return await interaction.editReply('You dont have a team! Contact your manager.');
 
   // 2. We get all the battles and the PVP information from the API
-  const { battles } = await getScholarBattles(teamAddress);
+  const { battles } = await getBattlesData(teamAddress);
   const roninData = await getRoninData(teamAddress);
   const { rank, name, mmr } = roninData[teamAddress];
 
   // 3. We sort the battles by won, tied and lost
-  const battlesSummary = await calcBattlesSummary(battles, teamAddress);
+  const battlesSummary = await getBattlesSummary(battles, teamAddress);
 
   // 4. We calculate the hours passed since the last battle
   const { gameEnded: lastBattleDate } = battles[0];
-  const hoursSinceLastBattle = calcLastBattleinHours(lastBattleDate);
+  const hoursSinceLastBattle = getLastBattleinHours(lastBattleDate);
 
   // 5. We create a new Object with the calculations of battleSumary and hoursSinceLastBattle
   const battlesStats = { name, rank, mmr, hoursSinceLastBattle, ...battlesSummary };
