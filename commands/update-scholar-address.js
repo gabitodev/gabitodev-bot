@@ -27,7 +27,7 @@ const updateScholarRonin = async (interaction) => {
   if (rowCount === 0) return await interaction.reply('The address could not be updated because the discord user is not a scholar.');
 
   // 3. We display the response to the user
-  await interaction.reply(`Assigned ${inlineCode(`${scholarAddress}`)} ronin address to scholar <@${discordId}>.`);
+  await interaction.reply(`Assigned ${inlineCode(scholarAddress)} ronin address to scholar <@${discordId}>.`);
 };
 
 module.exports = {
