@@ -6,7 +6,7 @@ const getTop = async () => {
   try {
     const top3 = await many({
       text:`
-      SELECT scholars.full_name, teams.mmr FROM Scholars
+      SELECT scholars.scholar_name, teams.mmr FROM Scholars
       INNER JOIN teams
       ON scholars.discord_id = teams.discord_id
       ORDER BY mmr DESC
@@ -21,11 +21,12 @@ const getTop = async () => {
 const getTop3 = async (interaction) => {
   // 1. We obtain the top 3 of the scholarships
   const top3Scholars = await getTop();
+  console.log(top3Scholars);
   if (!top3Scholars) return await interaction.reply('There was an error loading the top 3! Verify that you have scholars.');
 
   // 2. We make an array to display the leaderboard
-  const orderedTop3 = top3Scholars.map(({ scholar_name, mmr }, index) => {
-    const array = [index + 1, scholar_name, mmr];
+  const orderedTop3 = top3Scholars.map(({ scholarName, mmr }, index) => {
+    const array = [index + 1, scholarName, mmr];
     return array;
   });
 
