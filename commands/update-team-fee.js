@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { result } = require('../database');
 
-const setTeamFee = async (interaction) => {
+const updateTeamFee = async (interaction) => {
   // 1. We define the variables
   const teamId = interaction.options.getNumber('team-id');
   const dailyFee = interaction.options.getNumber('fee-amount');
@@ -33,6 +33,6 @@ module.exports = {
         .setRequired(true)),
   async execute(interaction) {
     if (interaction.user.id !== interaction.guild.ownerId) return;
-    await setTeamFee(interaction);
+    await updateTeamFee(interaction);
   },
 };
