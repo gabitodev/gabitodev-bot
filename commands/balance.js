@@ -5,7 +5,7 @@ const { getRoninData } = require('../modules/ronin-data');
 const { oneOrNone } = require('../database');
 const { getDaysToNextClaim } = require('../modules/days-next-claim');
 const { getTeamSummary } = require('../modules/team-summary');
-const { updateScholar } = require('../modules/database-querys');
+const { updateScholar } = require('../modules/update-scholar');
 const { convertSlpToUsd } = require('../modules/slp-convertion');
 
 const getScholarTeam = async (teamId) => {

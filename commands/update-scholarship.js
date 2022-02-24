@@ -1,7 +1,7 @@
 const { many } = require('../database');
 const { getRoninData } = require('../modules/ronin-data');
 const { getTeamSummary } = require('../modules/team-summary');
-const { updateScholar } = require('../modules/database-querys');
+const { updateScholar } = require('../modules/update-scholar');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const getScholars = async () => {
