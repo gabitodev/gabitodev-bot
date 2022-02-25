@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { result } = require('../database');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const updateTeamFee = async (interaction) => {
   // 1. We define the variables
@@ -7,7 +7,7 @@ const updateTeamFee = async (interaction) => {
   const dailyFee = interaction.options.getNumber('fee-amount');
 
   // 2. We add/remove the 20 energies to the scholar
-  const { rowCount } = await result({
+  const { rowCount } = await db.result({
     text: 'UPDATE teams SET daily_fee = $1 WHERE team_id = $2',
     values: [dailyFee, teamId],
   });
@@ -17,7 +17,7 @@ const updateTeamFee = async (interaction) => {
   await interaction.reply(`Successfully assigned a daily fee of ${dailyFee} to team #${teamId}.`);
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('update-team-fee')
     .setDescription('Updates the fee charged daily')

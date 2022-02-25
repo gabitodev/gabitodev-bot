@@ -1,13 +1,13 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const { DateTime, Interval } = require('luxon');
-const { one } = require('../database');
-const { getRoninData } = require('../modules/ronin-data');
-const { getBattlesData } = require('../modules/battles-data');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { MessageEmbed } from 'discord.js';
+import { DateTime, Interval } from 'luxon';
+import { db } from '../database/index.js';
+import { getRoninData } from '../modules/ronin-data.js';
+import { getBattlesData } from '../modules/battles-data.js';
 
 const getTeamAddress = async (discordId) => {
   try {
-    const teamAddress = await one({
+    const teamAddress = await db.one({
       text: 'SELECT team_address FROM teams WHERE discord_id = $1',
       values: [discordId],
     });
@@ -134,7 +134,7 @@ const getBattleStats = async (interaction) => {
   });
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('battle-stats')
     .setDescription('Show your recent battles in arena'),

@@ -1,14 +1,12 @@
-const { create } = require('axios').default;
-const { default: applyCaseMiddleware } = require('axios-case-converter');
+import axios from 'axios';
+import applyCaseMiddleware from 'axios-case-converter';
 
-const getRoninData = async (roninAddress) => {
+export const getRoninData = async (roninAddress) => {
   try {
-    const { get } = applyCaseMiddleware(create());
-    const { data } = await get(`https://game-api.axie.technology/api/v1/${roninAddress},null`);
+    const client = applyCaseMiddleware.default(axios.create());
+    const { data } = await client.get(`https://game-api.axie.technology/api/v1/${roninAddress},null`);
     return data;
   } catch (error) {
     console.error(error);
   }
 };
-
-module.exports.getRoninData = getRoninData;

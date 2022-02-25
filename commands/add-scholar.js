@@ -1,6 +1,6 @@
-const { stripIndents } = require('common-tags');
-const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { none } = require('../database');
+import { stripIndents } from 'common-tags';
+import { SlashCommandBuilder, inlineCode, bold } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const validateRoninAddress = (scholarAddress) => {
   if (!scholarAddress) {
@@ -27,7 +27,7 @@ const addScholar = async (interaction) => {
     }
 
     // 2. We create the scholar in the database and add Scholar Role
-    await none({
+    await db.none({
       text: 'INSERT INTO scholars (discord_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
       values: [scholarDiscordId, scholarName, scholarAddress],
     });
@@ -52,7 +52,7 @@ const addScholar = async (interaction) => {
   }
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('add-scholar')
     .setDescription('Adds a new scholar')

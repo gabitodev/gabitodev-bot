@@ -1,12 +1,12 @@
-const { many } = require('../database');
-const { getRoninData } = require('../modules/ronin-data');
-const { getTeamSummary } = require('../modules/team-summary');
-const { updateScholar } = require('../modules/update-scholar');
-const { SlashCommandBuilder } = require('@discordjs/builders');
+import { db } from '../database/index.js';
+import { getRoninData } from '../modules/ronin-data.js';
+import { getTeamSummary } from '../modules/team-summary.js';
+import { updateScholar } from '../modules/update-scholar.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
 
 const getScholars = async () => {
   try {
-    const scholars = await many({
+    const scholars = await db.many({
       text: `
       SELECT * FROM teams
       INNER JOIN scholars 
@@ -21,6 +21,7 @@ const getScholars = async () => {
 };
 
 const updateScholarship = async (interaction) => {
+  await interaction.reply('Updating the database...');
   // 1. We obtain all the shcolars
   const scholars = await getScholars();
 
@@ -35,10 +36,10 @@ const updateScholarship = async (interaction) => {
     const teamSummary = getTeamSummary(scholarData, roninData);
     updateScholar(teamSummary);
   }
-  await interaction.reply('The scholarship has been updated.');
+  await interaction.editReply('The scholarship has been updated.');
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('update-scholarship')
     .setDescription('Updates scholarship'),

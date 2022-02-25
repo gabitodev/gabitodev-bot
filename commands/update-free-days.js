@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { result } = require('../database');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const updateFreeDays = async (interaction) => {
   // 1. We define the variables
@@ -7,7 +7,7 @@ const updateFreeDays = async (interaction) => {
   const freeDays = interaction.options.getNumber('free-days');
 
   // 2. We update the free days to the team
-  const { rowCount } = await result({
+  const { rowCount } = await db.result({
     text: 'UPDATE teams SET free_days = $1 WHERE team_id = $2',
     values: [freeDays, teamId],
   });
@@ -17,7 +17,7 @@ const updateFreeDays = async (interaction) => {
   await interaction.reply(`Assigned ${freeDays} days without fee to team #${teamId}.`);
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('update-free-days')
     .setDescription('Updates days without fee to a team')

@@ -1,6 +1,6 @@
-const { deployCommands } = require('../modules/deploy-commands');
+import { deployCommands } from '../modules/deploy-commands.js';
 
-module.exports = {
+export const event = {
   name: 'ready',
   once: true,
   async execute(client) {

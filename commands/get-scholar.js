@@ -1,13 +1,13 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const { many } = require('../database');
-const { getRoninData } = require('../modules/ronin-data');
-const { getTeamSummary } = require('../modules/team-summary');
-const { getDaysToNextClaim } = require('../modules/days-next-claim');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { MessageEmbed } from 'discord.js';
+import { db } from '../database/index.js';
+import { getRoninData } from '../modules/ronin-data.js';
+import { getTeamSummary } from '../modules/team-summary.js';
+import { getDaysToNextClaim } from '../modules/days-next-claim.js';
 
 const getScholar = async (discordId) => {
   try {
-    const scholar = await many({
+    const scholar = await db.many({
       text: `
       SELECT scholars.scholar_address, teams.team_id, teams.team_address, teams.daily_fee, teams.free_days, teams.yesterday_slp FROM Teams
       INNER JOIN scholars
@@ -59,7 +59,7 @@ const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId
         { name: '🏠 Ronin Address', value: `${scholarAddress}`, inline: false },
         { name: '🆔 Account Name', value: `Gabitodev #${teamId}`, inline: true },
         { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
-        { name: '🗓 Days to Next Claim', value: `${daysToNextClaim}`, inline: true },
+        { name: '🗓 Time to Next Claim', value: `${daysToNextClaim}`, inline: true },
         { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
         convertDailyFee(dailyFee),
         { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
@@ -92,7 +92,7 @@ const getScholarInfo = async (interaction) => {
   });
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('get-scholar')
     .setDescription('Shows the information of the scholar')

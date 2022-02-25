@@ -1,4 +1,4 @@
-const { DateTime, Interval } = require('luxon');
+import { DateTime, Interval } from 'luxon';
 
 const getIsoDateFromSeconds = (unixDate) => {
   const date = (DateTime.fromSeconds(unixDate)).toISODate();
@@ -15,11 +15,10 @@ const getDaysSinceLastClaim = (date) => {
 
 const calcScholarFee = (daysSinceLastClaim, freeDays, dailyFee, inGameSlp) => {
   if (dailyFee > 1) {
-    const fee = dailyFee * (daysSinceLastClaim - freeDays);
-    const feeRounded = Math.max(0, fee);
-    return feeRounded;
+    const fee = Math.max(0, dailyFee * (daysSinceLastClaim - freeDays));
+    return fee;
   } else {
-    return inGameSlp * dailyFee;
+    return Math.round(inGameSlp * dailyFee);
   }
 };
 
@@ -32,7 +31,7 @@ const calcAverageSLP = (slp, daysSinceLastClaim) => {
   }
 };
 
-const getTeamSummary = (teamData, roninData) => {
+export const getTeamSummary = (teamData, roninData) => {
   const { freeDays, teamId, dailyFee, teamAddress, yesterdaySlp } = teamData;
   const { lastClaim: lastClaimUnix, nextClaim: nextClaimUnix, inGameSlp, mmr } = roninData[teamAddress];
   const lastClaim = getIsoDateFromSeconds(lastClaimUnix);
@@ -55,5 +54,3 @@ const getTeamSummary = (teamData, roninData) => {
   };
   return teamStats;
 };
-
-module.exports.getTeamSummary = getTeamSummary;

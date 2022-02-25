@@ -1,14 +1,12 @@
-const { create } = require('axios').default;
-const { default: applyCaseMiddleware } = require('axios-case-converter');
+import axios from 'axios';
+import applyCaseMiddleware from 'axios-case-converter';
 
-const getBattlesData = async (roninAddress) => {
+export const getBattlesData = async (roninAddress) => {
   try {
-    const { get } = applyCaseMiddleware(create());
+    const { get } = applyCaseMiddleware.default(axios.create());
     const { data } = await get(`https://game-api.axie.technology/logs/pvp/${roninAddress}`);
     return data;
   } catch (error) {
     console.error(error);
   }
 };
-
-module.exports.getBattlesData = getBattlesData;

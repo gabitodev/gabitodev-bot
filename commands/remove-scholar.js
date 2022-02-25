@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { result } = require('../database');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const removeScholar = async (interaction) => {
   // 1. We define the variables
@@ -7,7 +7,7 @@ const removeScholar = async (interaction) => {
   const member = await interaction.guild.members.fetch(discordId);
 
   // 2. We remove the scholar from the database and kick the user
-  const { rowCount } = await result({
+  const { rowCount } = await db.result({
     text: 'DELETE FROM scholars WHERE discord_id = $1',
     values: [discordId],
   });
@@ -18,7 +18,7 @@ const removeScholar = async (interaction) => {
   await interaction.reply(`Successfully removed and kicked the scholar <@${discordId}>.`);
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('remove-scholar')
     .setDescription('Removes and kicks a scholar')

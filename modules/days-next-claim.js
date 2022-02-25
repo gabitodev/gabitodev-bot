@@ -1,15 +1,16 @@
-const { DateTime, Interval } = require('luxon');
+import { DateTime, Interval } from 'luxon';
 
-const getDaysToNextClaim = (lastClaim) => {
+export const getDaysToNextClaim = (lastClaim) => {
   const now = DateTime.now();
   const lastClaimDate = DateTime.fromISO(lastClaim);
   const difference = Interval.fromDateTimes(now, lastClaimDate);
+  const { hours, minutes } = difference.toDuration(['hours', 'minutes']).toObject();
   const days = difference.length('days');
   if (!days) {
     return 'Ready to claim';
+  } else if (days < 1) {
+    return `In ${hours} hours and ${Math.floor(minutes)} minutes`;
   } else {
-    return `${days.toFixed(0)} days`;
+    return `In ${Math.floor(days)} days`;
   }
 };
-
-exports.getDaysToNextClaim = getDaysToNextClaim;

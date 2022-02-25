@@ -1,12 +1,12 @@
-const { AsciiTable3 } = require('ascii-table3');
-const { inlineCode, bold, codeBlock, SlashCommandBuilder } = require('@discordjs/builders');
-const { stripIndents } = require('common-tags');
-const { many, none } = require('../database');
-const { getRoninData } = require('../modules/ronin-data');
-const { convertSlpToUsd } = require('../modules/slp-convertion');
+import { AsciiTable3 } from 'ascii-table3';
+import { inlineCode, bold, codeBlock, SlashCommandBuilder } from '@discordjs/builders';
+import { stripIndents } from 'common-tags';
+import { db } from '../database/index.js';
+import { getRoninData } from '../modules/ronin-data.js';
+import { convertSlpToUsd } from '../modules/slp-convertion.js';
 
 const getScholars = async () => {
-  const scholars = await many({
+  const scholars = await db.many({
     text: 'SELECT * FROM teams INNER JOIN scholars ON scholars.discord_id = teams.discord_id ORDER BY teams.team_id',
   });
   return scholars;
@@ -83,14 +83,14 @@ const getSummary = async (interaction) => {
 
   // 7. Set the yesterday SLP equal to the unclaimed SLP
   for (const { inGameSlp, teamId } of scholars) {
-    await none({
+    await db.none({
       text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
       values: [inGameSlp, teamId],
     });
   }
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('summary')
     .setDescription('Shows the summary of the scholarship'),

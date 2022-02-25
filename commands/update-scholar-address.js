@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, inlineCode } = require('@discordjs/builders');
-const { result } = require('../database');
+import { SlashCommandBuilder, inlineCode } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const validateRoninAddress = (scholarAddress) => {
   if (!scholarAddress) {
@@ -20,7 +20,7 @@ const updateScholarRonin = async (interaction) => {
   }
 
   // 2. We update the new ronin address to the database
-  const { rowCount } = await result({
+  const { rowCount } = await db.result({
     text: 'UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2',
     values: [scholarAddress, discordId],
   });
@@ -30,7 +30,7 @@ const updateScholarRonin = async (interaction) => {
   await interaction.reply(`Assigned ${inlineCode(scholarAddress)} ronin address to scholar <@${discordId}>.`);
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('update-scholar-address')
     .setDescription('Updates the scholar ronin address')

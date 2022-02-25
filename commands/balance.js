@@ -1,15 +1,15 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed } = require('discord.js');
-const { DateTime, Interval } = require('luxon');
-const { getRoninData } = require('../modules/ronin-data');
-const { oneOrNone } = require('../database');
-const { getDaysToNextClaim } = require('../modules/days-next-claim');
-const { getTeamSummary } = require('../modules/team-summary');
-const { updateScholar } = require('../modules/update-scholar');
-const { convertSlpToUsd } = require('../modules/slp-convertion');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { MessageEmbed } from 'discord.js';
+import { DateTime, Interval } from 'luxon';
+import { getRoninData } from '../modules/ronin-data.js';
+import { db } from '../database/index.js';
+import { getDaysToNextClaim } from '../modules/days-next-claim.js';
+import { getTeamSummary } from '../modules/team-summary.js';
+import { updateScholar } from '../modules/update-scholar.js';
+import { convertSlpToUsd } from '../modules/slp-convertion.js';
 
 const getScholarTeam = async (teamId) => {
-  const scholarTeam = await oneOrNone({
+  const scholarTeam = await db.oneOrNone({
     text: 'SELECT * FROM teams WHERE team_id = $1',
     values: [teamId],
   });
@@ -45,7 +45,7 @@ const createTeamEmbed = async (teamStats, interaction) => {
     .addFields(
       { name: '📖 Team', value: `Gabitodev #${teamId}`, inline: true },
       { name: '🗓 Next Claim', value: `${nextClaimIso}`, inline: true },
-      { name: '🗓 Days to Next Claim', value: `${daysToNextClaim}`, inline: true },
+      { name: '🗓 Time to Next Claim', value: `${daysToNextClaim}`, inline: true },
       { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
       { name: '🛑 Manager SLP', value: `${managerSlp}`, inline: true },
       { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
@@ -96,7 +96,7 @@ const getBalance = async (interaction) => {
   }
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('balance')
     .setDescription('Show your team balance')

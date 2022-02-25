@@ -1,4 +1,4 @@
-module.exports = {
+export const event = {
   name: 'interactionCreate',
   async execute(interaction) {
     if (!interaction.isCommand()) return;

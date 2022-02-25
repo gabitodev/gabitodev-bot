@@ -1,6 +1,6 @@
-const CoinGecko = require('coingecko-api');
+import CoinGecko from 'coingecko-api';
 
-const convertSlpToUsd = async (slp) => {
+export const convertSlpToUsd = async (slp) => {
   const CoinGeckoClient = new CoinGecko;
   const { data } = await CoinGeckoClient.simple.price({
     ids: 'smooth-love-potion',
@@ -10,5 +10,3 @@ const convertSlpToUsd = async (slp) => {
   const scholarUsd = (slp * slpPriceUsd).toFixed(2);
   return `${scholarUsd}$`;
 };
-
-module.exports.convertSlpToUsd = convertSlpToUsd;

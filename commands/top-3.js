@@ -1,10 +1,10 @@
-const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
-const { AsciiTable3 } = require('ascii-table3');
-const { many } = require('../database');
+import { SlashCommandBuilder, codeBlock } from '@discordjs/builders';
+import { AsciiTable3 } from 'ascii-table3';
+import { db } from '../database/index.js';
 
 const getTop = async () => {
   try {
-    const top3 = await many({
+    const top3 = await db.many({
       text:`
       SELECT scholars.scholar_name, teams.mmr FROM Scholars
       INNER JOIN teams
@@ -40,7 +40,7 @@ const getTop3 = async (interaction) => {
   await interaction.reply(codeBlock(top3Table));
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('top-3')
     .setDescription('Show top 3 scholars'),

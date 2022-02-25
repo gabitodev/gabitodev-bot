@@ -1,5 +1,5 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const { result } = require('../database');
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const assignTeam = async (interaction) => {
   try {
@@ -8,7 +8,7 @@ const assignTeam = async (interaction) => {
     const discordId = interaction.options.getUser('discord-user').id;
 
     // 2. We update the database and check if was suscessfull
-    const { rowCount } = await result({
+    const { rowCount } = await db.result({
       text: 'UPDATE teams SET discord_id = $1 WHERE team_id = $2',
       values: [discordId, teamId],
     });
@@ -26,7 +26,7 @@ const assignTeam = async (interaction) => {
   }
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('assign-team')
     .setDescription('Assign a team to the scholar')

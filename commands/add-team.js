@@ -1,6 +1,6 @@
-const { stripIndents } = require('common-tags');
-const { SlashCommandBuilder, inlineCode, bold } = require('@discordjs/builders');
-const { none } = require('../database');
+import { stripIndents } from 'common-tags';
+import { SlashCommandBuilder, inlineCode, bold } from '@discordjs/builders';
+import { db } from '../database/index.js';
 
 const validFreeDays = (freeDays) => {
   if (!freeDays) {
@@ -24,7 +24,7 @@ const createTeam = async (interaction) => {
     }
 
     // 2. We create the team in the database
-    await none({
+    await db.none({
       text: 'INSERT INTO teams (team_id, team_address, daily_fee, free_days) VALUES ($1, $2, $3, $4)',
       values: [teamId, teamAddress, dailyFee, freeDays],
     });
@@ -49,7 +49,7 @@ const createTeam = async (interaction) => {
   }
 };
 
-module.exports = {
+export const command = {
   data: new SlashCommandBuilder()
     .setName('add-team')
     .setDescription('Adds a new team')

@@ -1,4 +1,6 @@
-const pgp = require('pg-promise')({
+import pgPromise from 'pg-promise';
+
+const pgp = pgPromise({
   receive: (data) => {
     camelizeColumns(data);
   },
@@ -26,6 +28,4 @@ const config = {
   max: 30,
 };
 
-const db = pgp(config);
-
-module.exports = db;
+export const db = pgp(config);
