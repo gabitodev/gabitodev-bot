@@ -13,37 +13,34 @@ const validateRoninAddress = (scholarAddress) => {
 const addScholar = async (interaction) => {
   try {
     // 1. We define the variables
-    const scholarDiscordId = interaction.options.getUser('discord-user').id;
-    const scholarName = interaction.options.getString('name');
-    const scholarAddress = interaction.options.getString('ronin-address');
-    const member = await interaction.guild.members.fetch(scholarDiscordId);
+    const discordId = interaction.options.getUser('discord-user').id;
+    const name = interaction.options.getString('name');
+    const roninAddress = interaction.options.getString('ronin-address');
+    const member = await interaction.guild.members.fetch(discordId);
     const role = await interaction.guild.roles.fetch(process.env.SCHOLAR_ROLE_ID);
 
     // Check if role is correct
     if (!role) return await interaction.reply('Wrong role! Make sure it is correct.');
     // Check is ronin is valid and use the ronin prefix
-    if (validateRoninAddress(scholarAddress) === false) {
+    if (validateRoninAddress(roninAddress) === false) {
       return await interaction.reply(`Wrong address! Make sure it starts with the ${inlineCode('ronin:')} prefix and is complete.`);
     }
 
     // 2. We create the scholar in the database and add Scholar Role
-    await db.none({
-      text: 'INSERT INTO scholars (discord_id, scholar_name, scholar_address) VALUES ($1, $2, $3)',
-      values: [scholarDiscordId, scholarName, scholarAddress],
-    });
+    db.prepare('INSERT INTO scholars (discord_id, full_name, ronin_address) VALUES (?, ?, ?)').run(discordId, name, roninAddress);
     member.roles.add(role);
 
     // 3. Display the response to the user
     await interaction.reply({
       content: stripIndents`
       ${bold('Successfully created a new scholar!')}
-      User: <@${scholarDiscordId}>
-      Name: ${inlineCode(scholarName)}
-      Ronin Address: ${inlineCode(scholarAddress)}
+      User: <@${discordId}>
+      Name: ${inlineCode(name)}
+      Ronin Address: ${inlineCode(roninAddress)}
       Role: <@&${process.env.SCHOLAR_ROLE_ID}>`,
     });
   } catch (error) {
-    if (error.code === '23505') {
+    if (error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
       return await interaction.reply('A scholar already exists with that discord user.');
     } else {
       console.log(error);
