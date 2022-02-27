@@ -7,7 +7,7 @@ const createScholarsTable = async () => {
     created_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     updated_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     full_name TEXT,
-    payout_address TEXT
+    ronin_address TEXT
   );
   `).run();
   console.log('Scholars table created');
@@ -19,8 +19,8 @@ const createTeamsTable = async () => {
     team_id INTEGER PRIMARY KEY,
     created_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     updated_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
-    discord_id TEXT REFERENCES scholars(discord_id) ON DELETE SET NULL,
-    team_address TEXT UNIQUE NOT NULL,
+    renter_discord_id TEXT REFERENCES scholars(discord_id) ON DELETE SET NULL,
+    ronin_address TEXT UNIQUE NOT NULL,
     daily_fee INTEGER DEFAULT 0,
     free_days INTEGER DEFAULT 0,
     last_claim DATE,
