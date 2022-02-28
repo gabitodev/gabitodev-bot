@@ -7,12 +7,10 @@ import { getBattlesData } from '../modules/battles-data.js';
 
 const getTeamAddress = async (discordId) => {
   try {
-    const teamAddress = await db.one({
-      text: 'SELECT team_address FROM teams WHERE discord_id = $1',
-      values: [discordId],
-    });
+    const teamAddress = db.prepare('SELECT ronin_address AS teamAddress FROM teams WHERE renter_discord_id = ?').get(discordId);
     return teamAddress;
   } catch (error) {
+    console.log(error);
     const teamAddress = {};
     return teamAddress;
   }
@@ -106,7 +104,7 @@ const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
 
   // 1. We define the constants and find the ronin address of the scholar
-  const discordId = interaction.user.id;
+  const discordId = '926717025978576946';
   const { teamAddress } = await getTeamAddress(discordId);
 
   // Check if the scholar has a team
