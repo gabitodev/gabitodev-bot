@@ -137,7 +137,7 @@ export const command = {
     .setName('battle-stats')
     .setDescription('Show your recent battles in arena'),
   async execute(interaction) {
-    if (interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
+    if (!interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
     await getBattleStats(interaction);
   },
 };
