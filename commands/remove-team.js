@@ -6,11 +6,8 @@ const removeTeam = async (interaction) => {
   const teamId = interaction.options.getString('team-id');
 
   // 2. We remove the team from the database
-  const { rowCount } = await db.result({
-    text: 'DELETE FROM Teams WHERE team_id = $1',
-    values: [teamId],
-  });
-  if (rowCount === 0) return await interaction.reply('Could not be remvoved because the team is not in the database.');
+  const { changes } = db.prepare('DELETE FROM Teams WHERE team_id = ?').run(teamId);
+  if (changes === 0) return await interaction.reply('Could not be remvoved because the team is not in the database.');
 
   // 3. Display the response to the user
   await interaction.reply(`Successfully removed team #<@${teamId}>.`);

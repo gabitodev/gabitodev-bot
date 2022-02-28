@@ -2,22 +2,23 @@ import { db } from '../database/index.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageEmbed } from 'discord.js';
 
-const getScholarsForPayout = async () => {
-  try {
-    return await db.many({
-      text: `
-      SELECT 
-      scholars.discord_id, scholars.scholar_address, teams.team_id, teams.in_game_slp, teams.manager_slp, teams.scholar_slp, teams.next_claim 
-      FROM teams
-      INNER JOIN scholars
-      ON scholars.discord_id = teams.discord_id
-      WHERE next_claim < now()
-      ORDER BY teams.team_id`,
-    });
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
+const getScholarsForPayout = () => {
+  const qualifiedScholarsForPayout = db.prepare(`
+  SELECT 
+    scholars.discord_id AS discordId,
+    scholars.ronin_address AS scholarAddress,
+    teams.team_id AS teamId,
+    teams.in_game_slp AS inGameSlp,
+    teams.manager_slp AS managerSlp,
+    teams.scholar_slp AS scholarSlp,
+    teams.next_claim AS nextClaim
+  FROM teams
+  INNER JOIN scholars
+  ON scholars.discord_id = teams.renter_discord_id
+  WHERE next_claim < Datetime('now')
+  ORDER BY teams.team_id
+  `).all();
+  return qualifiedScholarsForPayout;
 };
 
 const createPayoutEmbed = (scholars, interaction) => {
@@ -41,8 +42,8 @@ const createPayoutEmbed = (scholars, interaction) => {
 const payout = async (interaction) => {
   await interaction.reply('Loading payout...');
   // 1. We get the scholars for the payout
-  const scholars = await getScholarsForPayout();
-  if (!scholars) return await interaction.editReply('There was an error showing the payout! Verify that you have scholars.');
+  const scholars = getScholarsForPayout();
+  if (scholars.length === 0) return await interaction.editReply('No scholars aviable for payout.');
 
   // 2. We load the response to the user
   await interaction.editReply({

@@ -7,11 +7,8 @@ const updateTeamFee = async (interaction) => {
   const dailyFee = interaction.options.getNumber('fee-amount');
 
   // 2. We add/remove the 20 energies to the scholar
-  const { rowCount } = await db.result({
-    text: 'UPDATE teams SET daily_fee = $1 WHERE team_id = $2',
-    values: [dailyFee, teamId],
-  });
-  if (rowCount === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
+  const { changes } = db.prepare('UPDATE teams SET daily_fee = ? WHERE team_id = ?').run(dailyFee, teamId);
+  if (changes === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
 
   // 3. Display the response to the user
   await interaction.reply(`Successfully assigned a daily fee of ${dailyFee} to team #${teamId}.`);

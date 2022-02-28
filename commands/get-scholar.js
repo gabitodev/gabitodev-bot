@@ -5,22 +5,22 @@ import { getRoninData } from '../modules/ronin-data.js';
 import { getTeamSummary } from '../modules/team-summary.js';
 import { getDaysToNextClaim } from '../modules/days-next-claim.js';
 
-const getScholar = async (discordId) => {
-  try {
-    const scholar = await db.many({
-      text: `
-      SELECT scholars.scholar_address, teams.team_id, teams.team_address, teams.daily_fee, teams.free_days, teams.yesterday_slp FROM Teams
-      INNER JOIN scholars
-      ON scholars.discord_id = teams.discord_id
-      WHERE scholars.discord_id = $1
-      ORDER BY teams.team_id
-      `,
-      values: [discordId],
-    });
-    return scholar;
-  } catch (error) {
-    return null;
-  }
+const getScholar = (discordId) => {
+  const scholar = db.prepare(`
+  SELECT
+    scholars.ronin_address AS scholarAddress,
+    teams.team_id AS teamId,
+    teams.ronin_address AS teamAddress,
+    teams.daily_fee AS dailyFee,
+    teams.free_days AS freeDays,
+    teams.yesterday_slp AS yesterdaySlp
+  FROM Teams
+  INNER JOIN scholars
+  ON scholars.discord_id = teams.renter_discord_id
+  WHERE scholars.discord_id = ?
+  ORDER BY teams.team_id
+  `).all(discordId);
+  return scholar;
 };
 
 const convertDailyFee = (dailyFee) => {
@@ -74,12 +74,12 @@ const getScholarInfo = async (interaction) => {
 
   // 1. We obtain the information of the scholar
   const discordId = interaction.options.getUser('discord-user').id;
-  const scholar = await getScholar(discordId);
+  const scholar = getScholar(discordId);
 
   // 2. We verify that the scholar exists in the database
-  if (!scholar) return interaction.editReply('Failed to get the information because the discord user is not a scholar.');
+  if (scholar.length === 0) return interaction.editReply('Failed to get the information because the discord user is not a scholar.');
 
-  // 3. We calc the stats of the team and update the database
+  // 3. We calc the stats of the team
   const scholarTeams = await getScholarTeams(scholar);
 
   // 4. We get the scholar address

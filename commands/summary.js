@@ -5,40 +5,23 @@ import { db } from '../database/index.js';
 import { getRoninData } from '../modules/ronin-data.js';
 import { convertSlpToUsd } from '../modules/slp-convertion.js';
 
-const getScholars = async () => {
-  const scholars = await db.many({
-    text: 'SELECT * FROM teams INNER JOIN scholars ON scholars.discord_id = teams.discord_id ORDER BY teams.team_id',
-  });
-  return scholars;
-};
-
-const getTeams = (scholars) => {
-  const teams = scholars.map(({
-    teamId,
-    lastClaim,
-    nextClaim,
-    inGameSlp,
-    managerSlp,
-    scholarSlp,
+const getScholars = () => {
+  const scholars = db.prepare(`
+  SELECT 
+    team_id AS teamId,
+    last_claim AS lastClaim,
+    next_claim AS nextClaim,
+    in_game_slp AS inGameSlp,
+    manager_slp AS managerSlp,
+    scholar_slp AS scholarSlp,
     mmr,
-    averageSlp,
-    todaySlp,
-    scholarName }) => {
-    const array = [
-      teamId,
-      scholarName,
-      lastClaim.toISOString().substring(0, 10),
-      nextClaim.toISOString().substring(0, 10),
-      inGameSlp,
-      managerSlp,
-      scholarSlp,
-      mmr,
-      averageSlp,
-      todaySlp,
-    ];
-    return array;
-  });
-  return teams;
+    average_slp AS averageSlp,
+    today_slp AS todaySlp
+  FROM teams
+  WHERE renter_discord_id IS NOT NULL
+  ORDER BY team_id
+  `).all();
+  return scholars;
 };
 
 const getSummary = async (interaction) => {
@@ -51,10 +34,13 @@ const getSummary = async (interaction) => {
   if (!mainAccountSlp) return await interaction.editReply('No owner ronin address added! Make sure to add a valid ronin address.');
 
   // 2. We obtain all the scholars
-  const scholars = await getScholars();
+  const scholars = getScholars();
 
   // 3. We obtain the teams array to display to the user
-  const teams = getTeams(scholars);
+  const teams = scholars.map(({ teamId, lastClaim, nextClaim, inGameSlp, managerSlp, scholarSlp, mmr, averageSlp, todaySlp }) => {
+    const teamsArray = [teamId, lastClaim, nextClaim, inGameSlp, managerSlp, scholarSlp, mmr, averageSlp, todaySlp];
+    return teamsArray;
+  });
 
   // 4. we obtain the total of in game Slp and the manager Slp
   const totalManagerSlp = scholars.map(({ managerSlp }) => managerSlp).reduce((sum, item) => sum += item, 0);
@@ -64,7 +50,7 @@ const getSummary = async (interaction) => {
 
   // 5. We create the table
   const table = new AsciiTable3('')
-    .setHeading('Team', 'Scholar', 'Last Claim', 'Next Claim', 'In Game SLP', 'Fees SLP', 'Scholar SLP', 'MMR', 'Average SLP', 'Today SLP')
+    .setHeading('Team', 'Last Claim', 'Next Claim', 'In Game SLP', 'Fees SLP', 'Scholar SLP', 'MMR', 'Average SLP', 'Today SLP')
     .setAlign(3)
     .addRowMatrix(teams)
     .setStyle('unicode-single');
@@ -81,13 +67,13 @@ const getSummary = async (interaction) => {
   });
   await interaction.followUp(codeBlock(table));
 
-  // 7. Set the yesterday SLP equal to the unclaimed SLP
-  for (const { inGameSlp, teamId } of scholars) {
-    await db.none({
-      text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
-      values: [inGameSlp, teamId],
-    });
-  }
+  // // 7. Set the yesterday SLP equal to the unclaimed SLP
+  // for (const { inGameSlp, teamId } of scholars) {
+  //   await db.none({
+  //     text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
+  //     values: [inGameSlp, teamId],
+  //   });
+  // }
 };
 
 export const command = {

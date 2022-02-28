@@ -20,11 +20,8 @@ const updateScholarRonin = async (interaction) => {
   }
 
   // 2. We update the new ronin address to the database
-  const { rowCount } = await db.result({
-    text: 'UPDATE scholars SET scholar_address = $1 WHERE discord_id = $2',
-    values: [scholarAddress, discordId],
-  });
-  if (rowCount === 0) return await interaction.reply('The address could not be updated because the discord user is not a scholar.');
+  const { changes } = db.prepare('UPDATE scholars SET ronin_address = ? WHERE discord_id = ?').run(scholarAddress, discordId);
+  if (changes === 0) return await interaction.reply('The address could not be updated because the discord user is not a scholar.');
 
   // 3. We display the response to the user
   await interaction.reply(`Assigned ${inlineCode(scholarAddress)} ronin address to scholar <@${discordId}>.`);

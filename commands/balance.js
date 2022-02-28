@@ -69,7 +69,6 @@ const getBalance = async (interaction) => {
   // 1. We get the scholar team in the database
   const teamId = interaction.options.getNumber('team-id');
   const team = getScholarTeam(teamId);
-  console.log(team);
 
   // 2.1 We verify that the scholar exist in the database
   if (!team) return await interaction.editReply('This team does not exist in the database.');
@@ -114,7 +113,7 @@ export const command = {
         .setDescription('Team number')
         .setRequired(true)),
   async execute(interaction) {
-    if (!interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
+    // if (!interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
     await getBalance(interaction);
   },
 };

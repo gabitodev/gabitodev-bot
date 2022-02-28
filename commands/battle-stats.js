@@ -5,17 +5,6 @@ import { db } from '../database/index.js';
 import { getRoninData } from '../modules/ronin-data.js';
 import { getBattlesData } from '../modules/battles-data.js';
 
-const getTeamAddress = async (discordId) => {
-  try {
-    const teamAddress = db.prepare('SELECT ronin_address AS teamAddress FROM teams WHERE renter_discord_id = ?').get(discordId);
-    return teamAddress;
-  } catch (error) {
-    console.log(error);
-    const teamAddress = {};
-    return teamAddress;
-  }
-};
-
 const calcPercentages = (num, total) => {
   const percentage = (num * 100) / total;
   return percentage.toFixed(2);
@@ -104,8 +93,8 @@ const getBattleStats = async (interaction) => {
   await interaction.reply('Loading your team arena stats...');
 
   // 1. We define the constants and find the ronin address of the scholar
-  const discordId = '926717025978576946';
-  const { teamAddress } = await getTeamAddress(discordId);
+  const discordId = interaction.user.id;
+  const { teamAddress } = db.prepare('SELECT ronin_address AS teamAddress FROM teams WHERE renter_discord_id = ?').get(discordId) || {};
 
   // Check if the scholar has a team
   if (!teamAddress) return await interaction.editReply('You dont have a team! Contact your manager.');
