@@ -2,45 +2,32 @@ import { stripIndents } from 'common-tags';
 import { SlashCommandBuilder, inlineCode, bold } from '@discordjs/builders';
 import { db } from '../database/index.js';
 
-const validFreeDays = (freeDays) => {
-  if (!freeDays) {
-    return 0;
-  } else {
-    return freeDays;
-  }
-};
-
 const createTeam = async (interaction) => {
   try {
     // 1. We define the variables
     const teamId = interaction.options.getNumber('team-id');
-    const teamAddress = interaction.options.getString('ronin-address');
+    const roninAddress = interaction.options.getString('ronin-address');
     const dailyFee = interaction.options.getNumber('daily-fee');
-    const freeDays = validFreeDays(interaction.options.getNumber('free-days'));
 
     // Check is ronin is valid and use the ronin prefix
-    if (!teamAddress.startsWith('0x') || teamAddress.length !== 42) {
+    if (!roninAddress.startsWith('0x') || roninAddress.length !== 42) {
       return await interaction.reply(`Wrong address! Make sure it starts with the ${inlineCode('0x')} prefix and is complete.`);
     }
 
     // 2. We create the team in the database
-    await db.none({
-      text: 'INSERT INTO teams (team_id, team_address, daily_fee, free_days) VALUES ($1, $2, $3, $4)',
-      values: [teamId, teamAddress, dailyFee, freeDays],
-    });
+    db.prepare('INSERT INTO teams (team_id, ronin_address, daily_fee) VALUES (?, ?, ?)').run(teamId, roninAddress, dailyFee);
 
     // 3. Display the response to the user
     await interaction.reply({
       content: stripIndents`
       ${bold('Successfully created a new team!')}
       Number: ${inlineCode(teamId)}
-      Ronin address: ${inlineCode(teamAddress)}
+      Ronin address: ${inlineCode(roninAddress)}
       Daily fee: ${inlineCode(dailyFee)}
-      Days without fee: ${inlineCode(freeDays)}
       `,
     });
   } catch (error) {
-    if (error.code === '23505') {
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
       return await interaction.reply('A team already exists with that number or ronin address.');
     } else {
       console.log(error);
@@ -67,12 +54,7 @@ export const command = {
       option
         .setName('daily-fee')
         .setDescription('Fee to be charged daily')
-        .setRequired(true))
-    .addNumberOption(option =>
-      option
-        .setName('free-days')
-        .setDescription('Days without fee')
-        .setRequired(false)),
+        .setRequired(true)),
   async execute(interaction) {
     if (interaction.user.id !== interaction.guild.ownerId) return;
     await createTeam(interaction);
