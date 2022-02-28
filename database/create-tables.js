@@ -21,7 +21,7 @@ const createTeamsTable = async () => {
     updated_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     renter_discord_id TEXT REFERENCES scholars(discord_id) ON DELETE SET NULL,
     ronin_address TEXT UNIQUE NOT NULL,
-    daily_fee INTEGER DEFAULT 0,
+    daily_fee REAL DEFAULT 0,
     free_days INTEGER DEFAULT 0,
     last_claim DATE,
     next_claim DATE,
