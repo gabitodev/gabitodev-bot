@@ -8,11 +8,18 @@ import { getTeamSummary } from '../modules/team-summary.js';
 import { updateScholar } from '../modules/update-scholar.js';
 import { convertSlpToUsd } from '../modules/slp-convertion.js';
 
-const getScholarTeam = async (teamId) => {
-  const scholarTeam = await db.oneOrNone({
-    text: 'SELECT * FROM teams WHERE team_id = $1',
-    values: [teamId],
-  });
+const getScholarTeam = (teamId) => {
+  const scholarTeam = db.prepare(`
+  SELECT 
+  team_id AS teamId,
+  updated_at AS updatedAt,
+  renter_discord_id AS discordId,
+  ronin_address AS teamAddress,
+  daily_fee AS dailyFee,
+  free_days AS freeDays,
+  yesterday_slp AS yesterdaySlp
+  FROM teams WHERE team_id = ?
+  `).get(teamId);
   return scholarTeam;
 };
 
@@ -61,7 +68,8 @@ const getBalance = async (interaction) => {
 
   // 1. We get the scholar team in the database
   const teamId = interaction.options.getNumber('team-id');
-  const team = await getScholarTeam(teamId);
+  const team = getScholarTeam(teamId);
+  console.log(team);
 
   // 2.1 We verify that the scholar exist in the database
   if (!team) return await interaction.editReply('This team does not exist in the database.');
@@ -86,7 +94,7 @@ const getBalance = async (interaction) => {
     const teamSummary = getTeamSummary(team, roninData);
 
     // 6. We update the database
-    await updateScholar(teamSummary);
+    updateScholar(teamSummary);
 
     // 7. Display the response to the user
     await interaction.editReply({
