@@ -15,6 +15,12 @@ const getScholarTeam = (teamId) => {
   updated_at AS updatedAt,
   renter_discord_id AS discordId,
   ronin_address AS teamAddress,
+  next_claim AS nextClaim,
+  in_game_slp AS inGameSlp,
+  manager_slp AS managerSlp,
+  scholar_slp AS scholarSlp,
+  average_slp AS averageSlp,
+  today_slp AS todaySlp,
   daily_fee AS dailyFee,
   free_days AS freeDays,
   yesterday_slp AS yesterdaySlp
@@ -25,7 +31,7 @@ const getScholarTeam = (teamId) => {
 
 const getHoursPassedSinceUpdate = (updatedAt) => {
   const now = DateTime.now();
-  const updatedAtDate = DateTime.fromJSDate(updatedAt);
+  const updatedAtDate = DateTime.fromSeconds(updatedAt);
   const difference = Interval.fromDateTimes(updatedAtDate, now);
   const hours = difference.length('hour');
   return hours;
@@ -113,7 +119,7 @@ export const command = {
         .setDescription('Team number')
         .setRequired(true)),
   async execute(interaction) {
-    // if (!interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
+    if (!interaction.member.roles.cache.has(process.env.SCHOLAR_ROLE_ID)) return;
     await getBalance(interaction);
   },
 };
