@@ -69,10 +69,7 @@ const getSummary = async (interaction) => {
 
   // 7. Set the yesterday SLP equal to the unclaimed SLP
   for (const { inGameSlp, teamId } of scholars) {
-    await db.none({
-      text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
-      values: [inGameSlp, teamId],
-    });
+    db.prepare('UPDATE teams SET yesterday_slp = ?  WHERE team_id = ?').run(inGameSlp, teamId);
   }
 };
 
