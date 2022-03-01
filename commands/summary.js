@@ -69,7 +69,7 @@ const getSummary = async (interaction) => {
 
   // 7. Set the yesterday SLP equal to the unclaimed SLP
   for (const { inGameSlp, teamId } of scholars) {
-    db.prepare('UPDATE teams SET yesterday_slp = ?  WHERE team_id = ?').run(inGameSlp, teamId);
+    db.prepare('UPDATE teams SET yesterday_slp = ? WHERE team_id = ?').run(inGameSlp, teamId);
   }
 };
 
