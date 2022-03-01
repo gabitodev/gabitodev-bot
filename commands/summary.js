@@ -67,13 +67,13 @@ const getSummary = async (interaction) => {
   });
   await interaction.followUp(codeBlock(table));
 
-  // // 7. Set the yesterday SLP equal to the unclaimed SLP
-  // for (const { inGameSlp, teamId } of scholars) {
-  //   await db.none({
-  //     text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
-  //     values: [inGameSlp, teamId],
-  //   });
-  // }
+  // 7. Set the yesterday SLP equal to the unclaimed SLP
+  for (const { inGameSlp, teamId } of scholars) {
+    await db.none({
+      text: 'UPDATE teams SET yesterday_slp = $1  WHERE team_id = $2',
+      values: [inGameSlp, teamId],
+    });
+  }
 };
 
 export const command = {
