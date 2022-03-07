@@ -20,7 +20,6 @@
     "better-sqlite3": "^7.5.0",
     "coingecko-api": "^1.0.10",
     "common-tags": "^1.8.2",
-    "crypto-js": "^4.1.1",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
     "dotenv": "^15.0.0",
