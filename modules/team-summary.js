@@ -18,7 +18,7 @@ const calcScholarFee = (daysSinceLastClaim, freeDays, dailyFee, inGameSlp) => {
     const fee = Math.max(0, dailyFee * (daysSinceLastClaim - freeDays));
     return fee;
   } else {
-    return Math.round(inGameSlp * dailyFee);
+    return Math.floor(inGameSlp * dailyFee);
   }
 };
 
