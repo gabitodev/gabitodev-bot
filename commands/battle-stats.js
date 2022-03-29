@@ -59,7 +59,6 @@ const getAverageSlpPerBattle = (mmr) => {
 
 const createBattlesEmbed = (battlesSummary, discordId) => {
   const {
-    name,
     rank,
     mmr,
     hoursSinceLastBattle,
@@ -76,7 +75,6 @@ const createBattlesEmbed = (battlesSummary, discordId) => {
     .setTitle('Scholar Recent Battles')
     .setDescription(`Recent battles for scholar <@${discordId}> `)
     .addFields(
-      { name: '📖 In-Game Name', value: `${name}`, inline: true },
       { name: '🕐 Last Battle Time', value: `${hoursSinceLastBattle}`, inline: true },
       { name: '💢 Arena Battles', value: `Last ${totalBattles}`, inline: true },
       { name: '⚔ Arena MMR', value: `${mmr}`, inline: true },
@@ -102,7 +100,7 @@ const getBattleStats = async (interaction) => {
   // 2. We get all the battles and the PVP information from the API
   const { battles } = await getBattlesData(teamAddress);
   const roninData = await getRoninData(teamAddress);
-  const { rank, name, mmr } = roninData[teamAddress];
+  const { rank, mmr } = roninData[teamAddress];
 
   // 3. We sort the battles by won, tied and lost
   const battlesSummary = await getBattlesSummary(battles, teamAddress);
@@ -112,7 +110,7 @@ const getBattleStats = async (interaction) => {
   const hoursSinceLastBattle = getLastBattleinHours(lastBattleDate);
 
   // 5. We create a new Object with the calculations of battleSumary and hoursSinceLastBattle
-  const battlesStats = { name, rank, mmr, hoursSinceLastBattle, ...battlesSummary };
+  const battlesStats = { rank, mmr, hoursSinceLastBattle, ...battlesSummary };
 
   // 6. Display the response to the user
   await interaction.editReply({

@@ -31,7 +31,7 @@ const getSummary = async (interaction) => {
   const mainAccount = await getRoninData(process.env.MANAGER_RONIN);
   const { totalSlp: mainAccountSlp } = mainAccount[process.env.MANAGER_RONIN];
 
-  if (!mainAccountSlp) return await interaction.editReply('No owner ronin address added! Make sure to add a valid ronin address.');
+  if (mainAccountSlp === undefined) return await interaction.editReply('No owner ronin address added! Make sure to add a valid ronin address.');
 
   // 2. We obtain all the scholars
   const scholars = getScholars();

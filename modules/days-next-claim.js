@@ -1,9 +1,9 @@
 import { DateTime, Interval } from 'luxon';
 
-export const getDaysToNextClaim = (lastClaim) => {
+export const getDaysToNextClaim = (nextClaim) => {
   const now = DateTime.now();
-  const lastClaimDate = DateTime.fromISO(lastClaim);
-  const difference = Interval.fromDateTimes(now, lastClaimDate);
+  const nextClaimDate = DateTime.fromISO(nextClaim);
+  const difference = Interval.fromDateTimes(now, nextClaimDate);
   const { hours, minutes } = difference.toDuration(['hours', 'minutes']).toObject();
   const days = difference.length('days');
   if (!days) {
