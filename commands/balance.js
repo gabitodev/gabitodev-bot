@@ -46,7 +46,7 @@ const formatToIso = (date) => {
 };
 
 const createTeamEmbed = async (teamStats, interaction) => {
-  const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp');
+  const slpEmoji = interaction.guild.emojis.cache.find(emoji => emoji.name === 'slp') || '💰';
   const { teamId, nextClaim, inGameSlp, managerSlp, scholarSlp, averageSlp, todaySlp } = teamStats;
   const nextClaimIso = formatToIso(nextClaim);
   const shcolarSlpInUsd = await convertSlpToUsd(scholarSlp);
