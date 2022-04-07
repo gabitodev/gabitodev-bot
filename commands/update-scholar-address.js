@@ -20,7 +20,9 @@ const updateScholarRonin = async (interaction) => {
   }
 
   // 2. We update the new ronin address to the database
-  const { changes } = db.prepare('UPDATE scholars SET ronin_address = ? WHERE discord_id = ?').run(scholarAddress, discordId);
+  const { changes } = db.prepare('UPDATE scholars SET payout_address = ? WHERE discord_id = ?').run(scholarAddress, discordId);
+  db.close();
+
   if (changes === 0) return await interaction.reply('The address could not be updated because the discord user is not a scholar.');
 
   // 3. We display the response to the user
@@ -30,11 +32,11 @@ const updateScholarRonin = async (interaction) => {
 export const command = {
   data: new SlashCommandBuilder()
     .setName('update-scholar-address')
-    .setDescription('Updates the scholar ronin address')
+    .setDescription('Updates the scholar payout address')
     .addStringOption(option =>
       option
-        .setName('ronin-address')
-        .setDescription('The new ronin address')
+        .setName('payout-address')
+        .setDescription('The new payout address')
         .setRequired(true))
     .addUserOption(option =>
       option
