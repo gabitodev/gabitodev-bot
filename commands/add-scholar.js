@@ -67,7 +67,7 @@ export const command = {
     .addStringOption(option =>
       option
         .setName('payout-address')
-        .setDescription('Scholar payout address')
+        .setDescription('Scholar payout address. Starts with the ronin: prefix')
         .setRequired(false)),
   async execute(interaction) {
     if (interaction.user.id !== interaction.guild.ownerId) return;
