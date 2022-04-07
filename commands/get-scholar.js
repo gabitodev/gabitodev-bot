@@ -8,7 +8,7 @@ import { getDaysToNextClaim } from '../modules/days-next-claim.js';
 const getScholar = (discordId) => {
   const scholar = db.prepare(`
   SELECT
-    scholars.ronin_address AS scholarAddress,
+    scholars.payout_address AS scholarAddress,
     teams.team_id AS teamId,
     teams.ronin_address AS teamAddress,
     teams.daily_fee AS dailyFee,
@@ -20,6 +20,7 @@ const getScholar = (discordId) => {
   WHERE scholars.discord_id = ?
   ORDER BY teams.team_id
   `).all(discordId);
+  db.close();
   return scholar;
 };
 
@@ -56,7 +57,7 @@ const createScholarEmbed = (scholarTeams, interaction, scholarAddress, discordId
       .setTitle('Scholar Information')
       .setDescription(`<@${discordId}>`)
       .addFields(
-        { name: '🏠 Ronin Address', value: `${scholarAddress}`, inline: false },
+        { name: '🏠 Payout Address', value: `${scholarAddress}`, inline: false },
         { name: '🆔 Account Name', value: `Gabitodev #${teamId}`, inline: true },
         { name: '🗓 Next Claim', value: `${nextClaim}`, inline: true },
         { name: '🗓 Time to Next Claim', value: `${daysToNextClaim}`, inline: true },
