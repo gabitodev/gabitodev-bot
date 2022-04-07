@@ -93,6 +93,7 @@ const getBattleStats = async (interaction) => {
   // 1. We define the constants and find the ronin address of the scholar
   const discordId = interaction.user.id;
   const { teamAddress } = db.prepare('SELECT ronin_address AS teamAddress FROM teams WHERE renter_discord_id = ?').get(discordId) || {};
+  db.close();
 
   // Check if the scholar has a team
   if (!teamAddress) return await interaction.editReply('You dont have a team! Contact your manager.');
