@@ -9,6 +9,7 @@ const assignTeam = async (interaction) => {
 
     // 2. We update the database and check if was suscessfull
     const { changes } = db.prepare('UPDATE teams SET renter_discord_id = ? WHERE team_id = ?').run(discordId, teamId);
+    db.close();
     if (changes === 0) return await interaction.reply('The team could not be assigned because it does not exist in the database.');
 
     // 3. Display the response to the user
