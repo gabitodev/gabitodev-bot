@@ -61,7 +61,7 @@ const getSummary = async (interaction) => {
     ${bold('Gabitodev Scholarship')}
     Shcolarship SLP: ${inlineCode(totalInGameSlp)}
     Manager SLP: ${inlineCode(totalManagerSlp)}
-    Main Account SLP: = ${inlineCode(mainAccountSlp)}
+    Main Account SLP: ${inlineCode(mainAccountSlp)}
     Manager USD: ${inlineCode(totalOwnerUsd)}
     `,
   });
