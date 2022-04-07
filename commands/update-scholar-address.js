@@ -21,7 +21,6 @@ const updateScholarRonin = async (interaction) => {
 
   // 2. We update the new ronin address to the database
   const { changes } = db.prepare('UPDATE scholars SET payout_address = ? WHERE discord_id = ?').run(scholarAddress, discordId);
-  db.close();
 
   if (changes === 0) return await interaction.reply('The address could not be updated because the discord user is not a scholar.');
 

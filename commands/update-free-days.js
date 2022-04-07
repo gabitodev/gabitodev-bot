@@ -8,7 +8,6 @@ const updateFreeDays = async (interaction) => {
 
   // 2. We update the free days to the team
   const { changes } = db.prepare('UPDATE teams SET free_days = ? WHERE team_id = ?').run(freeDays, teamId);
-  db.close();
 
   if (changes === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
 

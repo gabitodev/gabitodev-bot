@@ -18,7 +18,6 @@ const getScholarsForPayout = () => {
   WHERE next_claim < Datetime('now')
   ORDER BY teams.team_id
   `).all();
-  db.close();
   return qualifiedScholarsForPayout;
 };
 

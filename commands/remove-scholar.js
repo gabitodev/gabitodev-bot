@@ -8,7 +8,6 @@ const removeScholar = async (interaction) => {
 
   // 2. We remove the scholar from the database and kick the user
   const { changes } = db.prepare('DELETE FROM scholars WHERE discord_id = ?').run(discordId);
-  db.close();
 
   if (changes === 0) return await interaction.reply('Could not be remvoved because the discord user is not a scholar.');
   member.kick('He will no longer be part of the scholarship');

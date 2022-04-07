@@ -25,7 +25,6 @@ const getBattles = async (interaction) => {
   const discordId = interaction.options.getUser('discord-user').id;
 
   const { teamAddress, teamId } = db.prepare('SELECT ronin_address AS teamAddress, team_id AS teamId FROM teams WHERE renter_discord_id = ?').get(discordId) || {};
-  db.close();
 
   if (!teamAddress) return await interaction.editReply('This discord user is not a scholar.');
 

@@ -21,7 +21,6 @@ const getScholars = () => {
   WHERE renter_discord_id IS NOT NULL
   ORDER BY team_id
   `).all();
-  db.close();
   return scholars;
 };
 

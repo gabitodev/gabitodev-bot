@@ -10,7 +10,6 @@ const getTop = async () => {
   ORDER BY mmr DESC
   LIMIT 3
   `).all();
-  db.close();
   return top3;
 };
 

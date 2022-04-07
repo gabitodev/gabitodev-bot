@@ -16,7 +16,6 @@ const createTeam = async (interaction) => {
 
     // 2. We create the team in the database
     db.prepare('INSERT INTO teams (team_id, ronin_address, daily_fee) VALUES (?, ?, ?)').run(teamId, roninAddress, dailyFee);
-    db.close();
 
     // 3. Display the response to the user
     await interaction.reply({

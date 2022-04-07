@@ -8,7 +8,6 @@ const updateTeamFee = async (interaction) => {
 
   // 2. We add/remove the 20 energies to the scholar
   const { changes } = db.prepare('UPDATE teams SET daily_fee = ? WHERE team_id = ?').run(dailyFee, teamId);
-  db.close();
 
   if (changes === 0) return await interaction.reply('The team could not be updated because it does not exist in the database.');
 

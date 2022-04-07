@@ -20,7 +20,6 @@ const getScholar = (discordId) => {
   WHERE scholars.discord_id = ?
   ORDER BY teams.team_id
   `).all(discordId);
-  db.close();
   return scholar;
 };
 
