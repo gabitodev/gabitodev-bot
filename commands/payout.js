@@ -6,7 +6,7 @@ const getScholarsForPayout = () => {
   const qualifiedScholarsForPayout = db.prepare(`
   SELECT 
     scholars.discord_id AS discordId,
-    scholars.ronin_address AS scholarAddress,
+    scholars.payout_address AS scholarAddress,
     teams.team_id AS teamId,
     teams.in_game_slp AS inGameSlp,
     teams.manager_slp AS managerSlp,
@@ -18,6 +18,7 @@ const getScholarsForPayout = () => {
   WHERE next_claim < Datetime('now')
   ORDER BY teams.team_id
   `).all();
+  db.close();
   return qualifiedScholarsForPayout;
 };
 
@@ -29,7 +30,7 @@ const createPayoutEmbed = (scholars, interaction) => {
       .setTitle(`Payout for team #${teamId}`)
       .setDescription(`<@${discordId}>`)
       .addFields(
-        { name: '🏠 Ronin Address', value: `${scholarAddress}`, inline: false },
+        { name: '🏠 Payout Address', value: `${scholarAddress}`, inline: false },
         { name: `${slpEmoji} In Game SLP`, value: `${inGameSlp}`, inline: true },
         { name: '🛑 Manager SLP', value: `${managerSlp}`, inline: true },
         { name: '✅ Scholar SLP', value: `${scholarSlp}`, inline: true },
