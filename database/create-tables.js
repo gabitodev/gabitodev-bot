@@ -7,7 +7,7 @@ const createScholarsTable = async () => {
     created_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     updated_at TIMESTAMP NOT NULL DEFAULT (strftime('%s', 'now')),
     full_name TEXT,
-    ronin_address TEXT
+    payout_address TEXT
   );
   `).run();
   console.log('Scholars table created');
