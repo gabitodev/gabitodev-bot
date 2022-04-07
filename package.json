@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -r dotenv/config index.js",
-    "create-tables": "node -r dotenv/config ./database/create-tables.js"
+    "create-tables": "node -r dotenv/config ./database/create-tables.js",
+    "import-tables": "node -r dotenv/config ./database/import-tables.js"
   },
   "author": "gabitodev",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "better-sqlite3": "^7.5.0",
     "coingecko-api": "^1.0.10",
     "common-tags": "^1.8.2",
+    "csv-parser": "^3.0.0",
     "discord-api-types": "^0.26.1",
     "discord.js": "^13.6.0",
     "dotenv": "^15.0.1",
