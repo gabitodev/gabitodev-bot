@@ -26,6 +26,7 @@ const getScholarTeam = (teamId) => {
   yesterday_slp AS yesterdaySlp
   FROM teams WHERE team_id = ?
   `).get(teamId);
+  db.close();
   return scholarTeam;
 };
 
