@@ -188,9 +188,9 @@ For scholars:
 
    ![image](https://user-images.githubusercontent.com/8563780/162329832-1eb44e1f-cab2-494f-a667-fe6b4a7c4002.png)
    
-`discordId` the scholar discord id, you can get this directly from discord. If you dont know how to get this Google if yours best friend. **Needed**.
+`discordId` the scholar discord id, you can get this directly from discord. If you dont know how to get this Google if yours best friend. **Required**.
 
-`fullName` the name of your scholar. **Needed**.
+`fullName` the name of your scholar. **Required**.
 
 `payoutAddress` is where the scholar receives their payouts. Leave it blank if you don't already have this information. **Optional**.
 
@@ -198,9 +198,9 @@ For teams:
 
    ![image](https://user-images.githubusercontent.com/8563780/162330144-96a930d1-8815-4f49-a3f4-bc082b2dd5ff.png)
 
-`teamId` the team id of the account (account number) it cannot be repeated. **Needed**.
+`teamId` the team id of the account (account number) it cannot be repeated. **Required**.
 
-`roninAddress` your team ronin address. **Needed**.
+`roninAddress` your team ronin address. **Required**.
 
 `daily fee` can be a percentage (example: 0.5 is 50%) or it can be a static number charged daily (example: 30 SLP). **Optional**.
 
