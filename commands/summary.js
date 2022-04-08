@@ -58,7 +58,7 @@ const getSummary = async (interaction) => {
   // 6. We display the summary to the user
   await interaction.editReply({
     content: stripIndents`
-    ${bold('Gabitodev Scholarship')}
+    ${bold('Scholarship Summary')}
     Shcolarship SLP: ${inlineCode(totalInGameSlp)}
     Manager SLP: ${inlineCode(totalManagerSlp)}
     Main Account SLP: ${inlineCode(mainAccountSlp)}

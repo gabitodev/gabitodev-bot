@@ -10,7 +10,7 @@ const removeTeam = async (interaction) => {
   if (changes === 0) return await interaction.reply('Could not be remvoved because the team is not in the database.');
 
   // 3. Display the response to the user
-  await interaction.reply(`Successfully removed team #<@${teamId}>.`);
+  await interaction.reply(`Successfully removed team #${teamId}.`);
 };
 
 export const command = {

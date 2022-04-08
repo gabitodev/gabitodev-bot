@@ -11,7 +11,7 @@ const validateRoninAddress = (scholarAddress) => {
 
 const updateScholarRonin = async (interaction) => {
   // 1. We define the variables
-  const scholarAddress = interaction.options.getString('ronin-address');
+  const scholarAddress = interaction.options.getString('payout-address');
   const discordId = interaction.options.getUser('discord-user').id;
 
   // Check is ronin is valid and use the ronin prefix

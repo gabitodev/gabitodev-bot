@@ -27,7 +27,7 @@ const addScholar = async (interaction) => {
     }
 
     // 2. We create the scholar in the database and add Scholar Role
-    db.prepare('INSERT INTO scholars (discord_id, full_name, ronin_address) VALUES (?, ?, ?)').run(discordId, name, payoutAddress);
+    db.prepare('INSERT INTO scholars (discord_id, full_name, payout_address) VALUES (?, ?, ?)').run(discordId, name, payoutAddress);
     member.roles.add(role);
 
     // 3. Display the response to the user
