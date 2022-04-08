@@ -97,6 +97,8 @@ The discord bot will run in your local machine. You can deploy this bot in AWS i
 
 ![image](https://user-images.githubusercontent.com/8563780/162339931-3eb17039-da97-4bee-98af-99cd107ed691.png)
 
+I recommend to run this command before run `/summary` command because this ensures that the database has the latest information from the Axie Servers.
+
 `/update-team-fee` updates fee of one team. This command accepts two arguments:
 
 * **Team ID**: the account number to update the daily fee. **Required**
