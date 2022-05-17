@@ -188,7 +188,7 @@ For scholars:
 
    ![image](https://user-images.githubusercontent.com/8563780/162329832-1eb44e1f-cab2-494f-a667-fe6b4a7c4002.png)
    
-`discordId` the scholar discord id, you can get this directly from discord. If you dont know how to get this Google if yours best friend. **Required**.
+`discordId` the scholar discord id, you can get this directly from discord. If you dont know how to get this Google is yours best friend. **Required**.
 
 `fullName` the name of your scholar. **Required**.
 
