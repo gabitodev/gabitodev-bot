@@ -1,5 +1,5 @@
 # gabitodev-bot
-## An Axie Infinity Discord bot that helps to manage your scholarship right in your discord server.
+## A discord bot for Axie Infinity that helps manage your scholarship right on your discord server.
 The discord bot will run in your local machine. You can deploy this bot in AWS if you want.
 ### Features
 #### Scholar Commands
